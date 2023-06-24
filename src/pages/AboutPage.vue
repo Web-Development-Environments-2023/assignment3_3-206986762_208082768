@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-      Search
+      About
   </div>
 </template>
 
@@ -11,7 +11,7 @@
 <script>
 
   export default {
-    name: "SearchPage"
+    name: "AboutPage"
   };
 
 </script>

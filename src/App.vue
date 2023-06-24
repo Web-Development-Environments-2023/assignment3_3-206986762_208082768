@@ -1,59 +1,242 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link :to="{ name: 'main' }">Vue Recipes</router-link>|
-      <router-link :to="{ name: 'search' }">Search</router-link>|
-      {{ !$root.store.username }}
-      <span v-if="!$root.store.username">
-        Guest:
-        <router-link :to="{ name: 'register' }">Register</router-link>|
-        <router-link :to="{ name: 'login' }">Login</router-link>|
-      </span>
-      <span v-else>
-        {{ $root.store.username }}: <button @click="Logout">Logout</button>|
-      </span>
-    </div>
-    <router-view />
+    <header class="header">
+      <div class="header_search">
+        <router-link :to="{ name: 'search' }" id="search">Search <i class="material-icons search__icon" id="search" style="margin-top: 5px;">search</i></router-link>
+        <h1 style="color:rgb(255, 47, 0); text-align: center; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Flavor Fusion</h1>
+      </div>
+
+      <div>
+        <b-button v-b-toggle.sidebar-border id="btn">&#9776;</b-button>
+        <b-sidebar id="sidebar-border" sidebar-class="border-right border-danger" width="280px" shadow>
+        
+          <div id="nav">
+            <b-nav vertical>
+              <v-if v-if="!$root.store.username">
+                <h1 style="left: 0; font-size: 40px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Hello Guest,</h1>
+                ____________________________ <br><br>
+                <b-nav vertical>
+                  <router-link :to="{ name: 'register' }" class="navItems">Register</router-link>
+                  <router-link :to="{ name: 'login' }" class="navItems">Login</router-link>
+                </b-nav>
+                
+              </v-if>
+
+              <v-else v-else> 
+                <b-dropdown id="dropdown" size="x-lg" :text="getName()" variant="primary" no-flip>
+                  <b-dropdown-item @click="Logout">Logout</b-dropdown-item>
+                </b-dropdown>
+                ____________________________ <br><br><br>
+
+                <b-dropdown id="dropdown-personal" class="navItems" offset="40" dropright text="Personal" variant="primary" no-flip>
+                  <b-dropdown-item class="dropdownItems" href="#/favorites">Favorites</b-dropdown-item>
+                  <b-dropdown-item class="dropdownItems" href="#/myRecipes">My Recipes</b-dropdown-item>
+                  <b-dropdown-item class="dropdownItems" href="#/familyRecipes">La Familia</b-dropdown-item>
+                </b-dropdown>
+              </v-else>
+
+              <router-link :to="{ name: 'main' }" class="navItems">Home</router-link>
+              <router-link :to="{ name: 'search' }" class="navItems">Search</router-link>
+            </b-nav>
+          </div>
+
+          <footer class="footer">
+            <b-nav vertical>  
+              <router-link :to="{ name: 'about' }" class="navItems">About</router-link>
+              <router-link :to="{ name: 'contactUs' }" class="navItems">Contact Us</router-link>
+            </b-nav>
+          </footer>
+
+        </b-sidebar>
+      </div>
+      
+    </header>
+    <router-view/>
   </div>
 </template>
 
-<script>
-export default {
-  name: "App",
-  methods: {
-    Logout() {
-      this.$root.store.logout();
-      this.$root.toast("Logout", "User logged out successfully", "success");
 
-      this.$router.push("/").catch(() => {
-        this.$forceUpdate();
-      });
+<!-- #######################################################################################################
+############################################ scripts ################################################## -->
+
+<script>
+
+  export default {
+    name: "App",
+    data() {
+        return {
+          isClicked: false,
+          textcolor: ''
+        };
+    },
+
+    methods: {
+      Logout() {
+        this.$root.store.logout();
+        this.$root.toast("Logout", "User logged out successfully", "success");
+
+        this.$router.push("/").catch(() => {
+          this.$forceUpdate();
+        });
+      },
+
+      getName(){
+        return this.$root.store.username;
+      },
+
+      changeTextColor(event) {
+        event.target.classList.add('dropdownItems');
+        this.isClicked = !this.isClicked;
+      }
+
     }
-  }
-};
+  };
+
 </script>
 
+
+<!-- #######################################################################################################
+################################################# css ################################################## -->
+
 <style lang="scss">
-@import "@/scss/form-style.scss";
 
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  min-height: 100vh;
-}
+  @import "@/scss/form-style.scss";
 
-#nav {
-  padding: 30px;
-}
+  #app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    min-height: 100vh;
+  }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+  #nav {
+    padding: 20px;
+  }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+  #nav a {
+    font-weight: bold;
+  }
+
+  #nav a.router-link-exact-active {
+    color: #001aff;
+  }
+
+  .navItems{
+    color: #000000;
+    text-align: center;
+    font-size: 20px;
+    padding: 8px 8px 8px 0px;
+  }
+
+  .navItems:hover {
+    background: #8b828e;
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #ea2a2a,
+                0 0 25px #443b48,
+                0 0 50px #726a75,
+                0 0 100px #b0a6b5;
+  }
+
+  #sidebar-border {
+    background-color: #ff0000;
+  }
+
+  #dropdown-personal {
+    display: flex;
+    justify-content: center;
+  }
+
+  #dropdown {
+    display: flex;
+  }
+
+  #dropdown .dropdown-toggle {
+    margin-top: 0;
+    background-color: #000000;
+    font-size: x-large;
+    font-weight: bolder;
+  }
+
+  #dropdown-personal .dropdown-toggle {
+    background-color: white;
+    font-size: large;
+    font-weight: bolder;
+    color: #000000;
+    padding: 8px 8px 8px 0px;
+  }
+
+  #dropdown-personal .dropdown-toggle-exact-active {
+    color: #001aff;
+  }
+
+  .dropdownItems:active .dropdown-item { //TODO need to check this, this responsible for chenging the color when clicked
+    color: #001aff!important;
+  }
+
+  #btn {
+    top: 0px;
+    margin: 0;
+    text-align: left;
+    position: fixed;
+    font-size: 35px;
+    cursor: pointer;
+    background-color:transparent;
+    color: white;
+    border: none;
+  }
+
+  #btn:hover{
+    color: #ff0000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  #search:hover{
+    color: #00ff00;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+  }
+
+  .footer a.router-link:hover {
+    background: #8b828e;
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #ea2a2a,
+                0 0 25px #443b48,
+                0 0 50px #726a75,
+                0 0 100px #b0a6b5;
+  }
+
+  .footer a.router-link-exact-active {
+    color: #001aff;
+  }
+
+  .header {
+    z-index: 1050;
+    top: 0;
+    position: fixed;
+    width: 100%;
+    background: #545050;
+    color: #fff;
+    padding: 2px;
+  }
+
+  #search{
+    float:right;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-right: 5px;
+    color: white;
+  }
+
 </style>
