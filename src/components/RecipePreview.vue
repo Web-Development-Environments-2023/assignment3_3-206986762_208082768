@@ -1,27 +1,42 @@
 <template>
   <div>
 
-    <b-card 
-      :title = "recipe.title"
-      sub-title="Recipe"
-      :img-src="recipe.image"
-      img-alt="Image"
-      img-top
-      style="max-width: 20rem;"
-      class="mb-2"><br>
+    <b-card no-body style="max-width: 20rem;" class="mb-2">
+
+      <a style="cursor: pointer;" class="card-image-link" @click="navigateToRecipe(recipe.id)">
+        <b-card-img :src="recipe.image" alt="Image"></b-card-img>
+      </a>
       
-      <b-card-text>
-        {{ recipe.readyInMinutes }} minutes  |  {{ recipe.aggregateLikes }} likes <br>
-        {{ recipe.vegetarian ? 'vegetarian' : 'Not vegetarian' }}  |  {{ recipe.vegan ? 'vegan' : 'Not vegan' }}  |  {{ recipe.glutenFree ? 'No gluten' : 'With gluten' }}
+      <b-card-body>
+
+        <b-card-title>{{ recipe.title }}</b-card-title>
+        <b-card-sub-title>Recipe</b-card-sub-title><br>
+
+        <b-card-text>
+          <span style="color: red; font-weight: bold;">{{ recipe.readyInMinutes }}</span> minutes  |  <span style="color: red; font-weight: bold;">{{ recipe.aggregateLikes }}</span> likes <br><br>
+          <span :style="recipe.vegetarian ? 'color: green' : 'color: red'">
+            {{ recipe.vegetarian ? 'Vegetarian' : 'Not vegetarian' }}
+          </span>  |  
+
+          <span :style="recipe.vegan ? 'color: purple;' : 'color: red;'">
+            {{ recipe.vegan ? 'vegan' : 'Not vegan' }}
+          </span>  |  
+
+          <span :style="recipe.glutenFree ? 'color: blue' : 'color: red;'">
+            {{ recipe.glutenFree ? 'No gluten' : 'With gluten' }}
+          </span>
       </b-card-text>
       
-      <b-button @click="toggleFavorite" variant="link" size="sm" class="favorite-button">
-        <b-icon :icon="isFavorite ? 'heart-fill' : 'heart'" class="favorite-icon" />
-      </b-button> <br><br>
-    
-      <router-link :to="{ name: 'recipe', params: { recipeId: recipe.id } }" class="recipe-preview">
-        <b-button variant="primary">Learn More!</b-button>
-      </router-link>
+        <b-button @click="toggleFavorite" variant="link" size="sm" class="favorite-button">
+          <b-icon :icon="isFavorite ? 'heart-fill' : 'heart'" class="favorite-icon" />
+        </b-button> <br><br>
+      
+        <router-link :to="{ name: 'recipe', params: { recipeId: recipe.id } }" class="recipe-preview">
+          <b-button variant="primary">Learn More!</b-button>
+        </router-link>
+
+      </b-card-body>
+      
 
     </b-card>
 
@@ -43,6 +58,11 @@
       };
     },
 
+    created() {
+      // Read the favorite state from localStorage
+      this.isFavorite = localStorage.getItem('favorite') === 'true';
+    },
+
     props: {
       recipe: {
         type: Object,
@@ -51,10 +71,18 @@
     },
 
     methods: {
+      async navigateToRecipe(recipeId) {
+        this.$router.push({ name: 'recipe', params: { recipeId } });
+      },
+
+
       async toggleFavorite() { //TODO need to check if works!
         if (this.$root.store.username) {
 
           this.isFavorite = !this.isFavorite;
+          // Save the favorite state to localStorage
+          localStorage.setItem('favorite', this.isFavorite.toString());
+          
           if (this.isFavorite) {
             try {
               const response = await this.axios.post(
@@ -90,6 +118,14 @@
 ################################################# css ################################################## -->
 
 <style scoped>
+
+  .card-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
 
   .favorite-icon {
     font-size: 1.5rem;

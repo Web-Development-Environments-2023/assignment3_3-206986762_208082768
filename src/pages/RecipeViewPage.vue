@@ -1,46 +1,84 @@
 <template>
   <div class="container">
 
+    <div id="background"></div>
+
     <div v-if="recipe">
-      <div class="recipe-header mt-3 mb-4">
-        <h1>{{ recipe.title }}</h1>
-        <img :src="recipe.image" class="center" />
-      </div>
+      <table width="100%"> 
+        <tr>
 
-      <div class="recipe-body">
+          <td width="55%">
+            <h1 style="text-align: center; font-weight: bolder;font-size: 45px; font-family:Georgia, 'Times New Roman', Times, serif;">{{ recipe.title }}</h1>
+            <br><br>
+            <h2><span style="font-weight: bold;">Total Time:</span> <span style="color: red; font-weight: bold;">{{ recipe.readyInMinutes }}</span> minutes</h2>
+            <h2><span style="color: red; font-weight: bold;">{{ recipe.aggregateLikes }}</span> likes</h2> <br><br>
+            <div class="centered-list">
+              <ul>
+                <li>
+                  <span :style="recipe.vegetarian ? 'color: green' : 'color: red'">
+                    {{ recipe.vegetarian ? 'Vegetarian' : 'Not vegetarian' }}
+                  </span>
+                </li>
 
-        <div class="wrapper">
-          <div class="wrapped">
-            <div class="mb-3">
-              <div>Ready in {{ recipe.readyInMinutes }} minutes</div>
-              <div>Likes: {{ recipe.aggregateLikes }} likes</div>
+                <li>
+                  <span :style="recipe.vegan ? 'color: purple;' : 'color: red;'">
+                    {{ recipe.vegan ? 'vegan' : 'Not vegan' }}
+                  </span><br>
+                </li>
+
+                <li>
+                  <span :style="recipe.glutenFree ? 'color: blue' : 'color: red;'">
+                    {{ recipe.glutenFree ? 'No gluten' : 'With gluten' }}
+                  </span>
+                </li>
+              </ul>
             </div>
-            Ingredients:
-            <ul>
-              <li
-                v-for="(r, index) in recipe.extendedIngredients"
-                :key="index + '_' + r.id">
-                {{ r.original }}
-              </li>
-            </ul>
-          </div>
+          </td>
+          
+          <td width="45%">
+            <img :src="recipe.image" class="center" />
+          </td>
 
-          <div class="wrapped">
-            Instructions:
-            <ol>
-              <li v-for="s in recipe._instructions" :key="s.number">
-                {{ s.step }}
-              </li>
-            </ol>
-          </div>
-        </div>
-      </div>
+        </tr>
 
-      <!-- <pre>
-        {{ $route.params }}
-        {{ recipe }}
-      </pre> -->
+        <tr>
+          <td colspan="2">
+            <br><br>
+            <hr>
+            <br>
+          </td>
+        </tr>
 
+        <tr>
+          <td colspan="2">
+            <div class="recipe-body">
+
+              <div class="wrapper">
+                <div class="wrapped">
+                  <h3><u>Ingredients:</u></h3>
+                  <ul>
+                    <li
+                      v-for="(r, index) in recipe.extendedIngredients"
+                      :key="index + '_' + r.id">
+                      <h4 style="font-size:larger;">{{ r.original }}</h4>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="wrapped">
+                  <h3><u>Instructions:</u></h3>
+                  <ol>
+                    <li v-for="s in recipe.instructions" :key="s.number">
+                      <h4 style="font-size:larger;">{{ s.step }}</h4>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
     </div>
 
   </div>
@@ -54,26 +92,36 @@
 
   export default {
     data() {
-      return {
-        recipe: null
+      return { //TODO recipe: null
+        recipe:
+                {
+                  id: 641726,
+                  title: "Dulce De Leche Brownies",
+                  readyInMinutes: 45,
+                  image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
+                  aggregateLikes: 29,
+                  popularity: 5,
+                  vegan: true,
+                  vegetarian: true,
+                  glutenFree: true,
+                  instructions: {},
+                  servings: 4,
+                  ingredients: {}
+                }
+        
       };
     },
     
-    async created() {
+    async created() { //TODO uncomment this when working with server
       try {
         let response;
-        // response = this.$route.params.response;
 
-        try {
+        try { 
           response = await this.axios.get(
-            // "https://test-for-3-2.herokuapp.com/recipes/info",
-            this.$root.store.server_domain + "/recipes/info",
-            {
-              params: { id: this.$route.params.recipeId }
-            }
+            this.$root.store.server_domain + "/recipes/" + this.$route.params.recipeId,
+            { withCredentials: true }
           );
 
-          // console.log("response.status", response.status);
           if (response.status !== 200) this.$router.replace("/NotFound");
         } catch (error) {
           console.log("error.response.status", error.response.status);
@@ -124,6 +172,67 @@
 
 <style scoped>
 
+
+  /* table, th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+  } */
+
+  .container{
+    margin-top: 80px;
+    max-width: 100%;  
+  }
+
+  #background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    margin: 0;
+    background-image: url("../assets/RecipeView.jpg");
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    opacity: 0.9;
+  }
+
+  h2 {
+    text-align: center;
+    font-size:x-large;
+  }
+
+  .centered-list {
+    text-align: center;
+    font-size:x-large;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .centered-list ul {
+    list-style:disc;
+    text-align: center;
+  }
+
+  .centered-list li {
+    margin-bottom: 10px;
+  }
+
+  hr {
+    border: none;
+    border-top: 4px solid;
+    font-weight: bold;
+  }
+
+  h3 {
+    font-size:x-large;
+    color: red;
+    font-weight: bold;
+  }
+
   .wrapper {
     display: flex;
   }
@@ -136,7 +245,7 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 50%;
+    width: 100%;
   }
 
 </style>
