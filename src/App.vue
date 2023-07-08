@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    
     <header class="header">
       <div class="header_search">
         <router-link :to="{ name: 'search' }" id="search">Search <i class="material-icons search__icon" id="search" style="margin-top: 5px;">search</i></router-link>
@@ -12,7 +13,7 @@
         
           <div id="nav">
             <b-nav vertical>
-              <v-if v-if="!$root.store.username">
+              <div v-if="!$root.store.username">
                 <h1 style="left: 0; font-size: 40px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Hello Guest,</h1>
                 ____________________________ <br><br>
                 <b-nav vertical>
@@ -20,9 +21,9 @@
                   <router-link :to="{ name: 'login' }" class="navItems">Login</router-link>
                 </b-nav>
                 
-              </v-if>
+              </div>
 
-              <v-else v-else> 
+              <div v-else> 
                 <b-dropdown id="dropdown" size="x-lg" :text="getName()" variant="primary" no-flip>
                   <b-dropdown-item @click="Logout">Logout</b-dropdown-item>
                 </b-dropdown>
@@ -33,7 +34,13 @@
                   <b-dropdown-item class="dropdownItems" href="#/myRecipes">My Recipes</b-dropdown-item>
                   <b-dropdown-item class="dropdownItems" href="#/familyRecipes">La Familia</b-dropdown-item>
                 </b-dropdown>
-              </v-else>
+
+                <b-nav vertical>
+                  <a href="#" class="navItems" @click="openModal">Create new recipe</a>
+                  <CreateNewRecipeModal />
+                </b-nav>
+                
+              </div>
 
               <router-link :to="{ name: 'main' }" class="navItems">Home</router-link>
               <router-link :to="{ name: 'search' }" class="navItems">Search</router-link>
@@ -61,10 +68,16 @@
 
 <script>
 
+  import CreateNewRecipeModal from "./components/CreateNewRecipeModal";
   export default {
     name: "App",
+    components: {
+      CreateNewRecipeModal
+    },
+
     data() {
         return {
+          isModalOpen: false,
           isClicked: false,
           textcolor: ''
         };
@@ -82,6 +95,10 @@
 
       getName(){
         return this.$root.store.username;
+      },
+
+      openModal() {
+        this.$root.$emit('bv::show::modal', 'myModal');
       },
 
       changeTextColor(event) {

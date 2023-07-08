@@ -1,15 +1,15 @@
 <template>
   <div>
 
-    <b-card no-body style="max-width: 20rem;" class="mb-2">
+    <b-card no-body style="max-width: 20rem;">
 
-      <a style="cursor: pointer;" class="card-image-link" @click="navigateToRecipe(recipe.id)">
+      <a style="cursor: pointer;" class="card-image-link" @click="handleClick(recipe.id)">
         <b-card-img :src="recipe.image" alt="Image"></b-card-img>
       </a>
       
       <b-card-body>
 
-        <b-card-title>{{ recipe.title }}</b-card-title>
+        <b-card-title :style="getTitleStyle">{{ recipe.title }}</b-card-title>
         <b-card-sub-title>Recipe</b-card-sub-title><br>
 
         <b-card-text>
@@ -27,7 +27,7 @@
           </span>
       </b-card-text>
       
-        <b-button @click="toggleFavorite" variant="link" size="sm" class="favorite-button">
+        <b-button @click="toggleFavorite(recipe.id)" variant="link" size="sm" class="favorite-button">
           <b-icon :icon="isFavorite ? 'heart-fill' : 'heart'" class="favorite-icon" />
         </b-button> <br><br>
       
@@ -37,7 +37,6 @@
 
       </b-card-body>
       
-
     </b-card>
 
   </div>
@@ -48,19 +47,26 @@
 ############################################ scripts ################################################## -->
 
 <script>
-  export default {
-    mounted() {
-    },
 
+  export default {
     data() {
       return {
+        isViewed: false,
         isFavorite: false
       };
     },
 
     created() {
-      // Read the favorite state from localStorage
-      this.isFavorite = localStorage.getItem('favorite') === 'true';
+      this.isViewed = localStorage.getItem(`viewedState:${this.recipe.id}`) === 'true';
+      this.isFavorite = localStorage.getItem(`favoriteState:${this.recipe.id}`) === 'true';
+    },
+
+    computed: {
+      getTitleStyle() {
+        return {
+          color: this.isViewed ? 'rgb(38, 0, 255)' : 'black',
+        };
+      },
     },
 
     props: {
@@ -71,18 +77,22 @@
     },
 
     methods: {
+      handleClick(recipeID){
+        this.navigateToRecipe(recipeID);
+        this.toggleViewed(recipeID);
+      },
+
       async navigateToRecipe(recipeId) {
         this.$router.push({ name: 'recipe', params: { recipeId } });
       },
 
-
-      async toggleFavorite() { //TODO need to check if works!
+      async toggleFavorite(recipeID) { //TODO need to check if works!
         if (this.$root.store.username) {
 
           this.isFavorite = !this.isFavorite;
-          // Save the favorite state to localStorage
-          localStorage.setItem('favorite', this.isFavorite.toString());
-          
+          this.$emit('toggle-favorite', recipeID, this.isFavorite);
+          localStorage.setItem(`favoriteState:${this.recipe.id}`, this.isFavorite);
+
           if (this.isFavorite) {
             try {
               const response = await this.axios.post(
@@ -103,10 +113,45 @@
         else {
           this.$root.toast("Add to favorites", "You must login to add favorites!", "danger");
         }     
-      }
+      },
+
+      async toggleViewed(recipeID) { //TODO need to check if works! and to add post for whatched recipes
+        if (this.$root.store.username) {
+
+          if (!this.isViewed){
+            this.isViewed = !this.isViewed;
+            this.$emit('toggle-viewed', recipeID, this.isViewed);
+            localStorage.setItem(`viewedState:${this.recipe.id}`, this.isViewed);
+          }
+
+          else {
+            try {
+              const response = await this.axios.post(
+                this.$root.store.server_domain + "/users/favorites",
+                {recipeId: id},
+                { withCredentials: true }
+              );
+
+              if (response.status === 200){
+                this.$root.toast("Add to watch list", "Recipe was added to watch list successfully!", "success");
+              }
+            } catch(error){
+              this.$root.toast("Add to watch list", "Recipe was not added!", "danger");
+            }
+          }
+        }
+
+        else {
+          this.$root.toast("Add to watch list", "You must login to add watched recipes!", "danger");
+        }     
 
 
-      //TODO need to add another handler for the watched recipes (like favorites)
+      },
+
+      updateIsViewed_IsFavorite(flag){
+        this.isViewed = flag;
+        this.isFavorite = flag;
+      },
     },
 
   };

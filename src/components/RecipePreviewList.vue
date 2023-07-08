@@ -2,23 +2,23 @@
 
   <b-container fluid>
     
-    <v-if v-if="emptyResult"> No Results Found!</v-if>
+    <div v-if="emptyResult"> No Results Found!</div>
           
-    <v-if v-if="title == 'Random Recipes' || title == 'Last Watched Recipes'">
+    <div v-if="title == 'Random Recipes' || title == 'Last Watched Recipes'">
         <b-row>
             <b-col v-for="r in recipes" :key="r.id" cols="6">
-            <RecipePreview class="recipePreview" :recipe="r"></RecipePreview>
+              <RecipePreview ref="previews" class="recipePreview" :recipe="r" :isFavorite="isFavoriteRecipe(r.id)" @toggle-favorite="toggleFavorite" :isViewed="isRecipeViewed(r.id)" @toggle-viewed="toggleViewed"></RecipePreview>
             </b-col>
         </b-row>
-    </v-if>
+      </div>
 
-    <v-else v-else>
+    <div v-else>
         <b-row>
             <b-col v-for="r in recipes" :key="r.id" cols="3">
-              <RecipePreview class="recipePreview" :recipe="r"></RecipePreview>
+              <RecipePreview ref="previews" class="recipePreview" :recipe="r" :isFavorite="isFavoriteRecipe(r.id)" @toggle-favorite="toggleFavorite" :isViewed="isRecipeViewed(r.id)" @toggle-viewed="toggleViewed"></RecipePreview>
             </b-col>
         </b-row>
-    </v-else>
+      </div>
 
   </b-container>
     
@@ -104,7 +104,66 @@
       // }
     },
   
+    created() {
+      const userLoggedIn = this.$root.store.username;
+      if (!userLoggedIn) {
+        this.clearState();
+      } 
+      else {
+        this.restoreState();
+      }
+    },
+
     methods: {
+      toggleFavorite(recipeId, isFavorite) {
+        const recipe = this.recipes.find(recipe => recipe.id === recipeId);
+        if (recipe) {
+          recipe.isFavorite = isFavorite;
+          localStorage.setItem(`favoriteState:${recipe.id}`, isFavorite);
+        }
+      },
+
+      isFavoriteRecipe(recipeId) {
+        return localStorage.getItem(`favoriteState:${recipeId}`) === 'true';
+      },
+
+      toggleViewed(recipeId, isViewed) {
+        const recipe = this.recipes.find(recipe => recipe.id === recipeId);
+        if (recipe) {
+          recipe.isViewed = isViewed;
+          localStorage.setItem(`viewedState:${recipe.id}`, isViewed);
+        }
+      },
+
+      isRecipeViewed(recipeId) {
+        return localStorage.getItem(`viewedState:${recipeId}`) === 'true';
+      },
+
+      clearState() {
+        this.recipes.forEach(recipe => {
+          recipe.isViewed = false;
+          recipe.isFavorite = false;
+        });
+
+        this.$nextTick(() => {
+          Object.values(this.$refs.previews).forEach(previewComponent => {
+            if (previewComponent) {
+              previewComponent.updateIsViewed_IsFavorite(false);
+            }
+          });
+        });
+      },
+
+      restoreState() {
+        this.recipes.forEach(recipe => {
+          recipe.isFavorite = localStorage.getItem(`favoriteState:${recipe.id}`) === 'true';
+          recipe.isViewed = localStorage.getItem(`viewedState:${recipe.id}`) === 'true';
+        });
+      },
+
+      // ################################################################################
+      // ################################################################################
+
       async getRandomRecipes() {
         try {
           const response = await this.axios.post(

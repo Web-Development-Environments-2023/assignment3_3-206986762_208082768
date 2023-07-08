@@ -21,19 +21,19 @@
 
         <td width="4%"></td>
 
-        <v-if v-if="!$root.store.username">
+        <div v-if="!$root.store.username">
           <td class="box" style="width:48%;">
             <h1 class="message" style="background-color: rgba(255, 255, 255, 0.815); color: darkred;">You have to login to view this:</h1>
             <LoginForm class="overlay" style="border-radius: 10px;"></LoginForm>
             <RecipePreviewList title="Random Recipes" class="blur"></RecipePreviewList>
           </td>
-        </v-if>
+        </div>
 
-        <v-else v-else>
+        <div v-else>
           <td width="48%">
             <RecipePreviewList title="Last Watched Recipes"></RecipePreviewList>
           </td>
-        </v-else>    
+        </div>    
 
       </tr>
     </table>
