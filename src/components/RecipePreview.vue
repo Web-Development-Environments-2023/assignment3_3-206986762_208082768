@@ -1,69 +1,240 @@
 <template>
-  <router-link
-    :to="{ name: 'recipe', params: { recipeId: recipe.id } }"
-    class="recipe-preview"
-  >
-    <div class="recipe-body">
-      <img v-if="image_load" :src="recipe.image" class="recipe-image" />
-    </div>
-    <div class="recipe-footer">
-      <div :title="recipe.title" class="recipe-title">
-        {{ recipe.title }}
-      </div>
-      <ul class="recipe-overview">
-        <li>{{ recipe.readyInMinutes }} minutes</li>
-        <li>{{ recipe.aggregateLikes }} likes</li>
-      </ul>
-    </div>
-  </router-link>
+  <div>
+    <b-card no-body style="max-width: 20rem">
+      <a
+        style="cursor: pointer"
+        class="card-image-link"
+        @click="handleClick(recipe.id)"
+      >
+        <b-card-img :src="recipe.image" alt="Image"></b-card-img>
+      </a>
+
+      <b-card-body>
+        <b-card-title :style="getTitleStyle">{{ recipe.title }}</b-card-title>
+        <b-card-sub-title>Recipe</b-card-sub-title><br />
+
+        <b-card-text>
+          <span style="color: red; font-weight: bold">{{
+            recipe.readyInMinutes
+          }}</span>
+          minutes |
+          <span style="color: red; font-weight: bold">{{
+            recipe.aggregateLikes
+          }}</span>
+          likes <br /><br />
+          <span :style="recipe.vegetarian ? 'color: green' : 'color: red'">
+            {{ recipe.vegetarian ? "Vegetarian" : "Not vegetarian" }}
+          </span>
+          |
+
+          <span :style="recipe.vegan ? 'color: purple;' : 'color: red;'">
+            {{ recipe.vegan ? "vegan" : "Not vegan" }}
+          </span>
+          |
+
+          <span :style="recipe.glutenFree ? 'color: blue' : 'color: red;'">
+            {{ recipe.glutenFree ? "No gluten" : "With gluten" }}
+          </span>
+
+          <!-- <span v-if="getFamily">
+            {{ recipe.owner }}
+          </span>
+          <span v-if="getFamily">
+            {{ recipe.whenToPrepare }}
+          </span> -->
+        </b-card-text>
+
+        <b-button
+          @click="toggleFavorite(recipe.id)"
+          variant="link"
+          size="sm"
+          class="favorite-button"
+        >
+          <b-icon
+            :icon="isFavorite ? 'heart-fill' : 'heart'"
+            class="favorite-icon"
+          />
+        </b-button>
+        <br /><br />
+
+        <router-link
+          :to="{ name: 'recipe', params: { recipeId: recipe.id } }"
+          class="recipe-preview"
+        >
+          <b-button variant="primary">Learn More!</b-button>
+        </router-link>
+      </b-card-body>
+    </b-card>
+  </div>
 </template>
+
+
+<!-- #######################################################################################################
+############################################ scripts ################################################## -->
 
 <script>
 export default {
-  mounted() {
-    this.axios.get(this.recipe.image).then((i) => {
-      this.image_load = true;
-    });
-  },
   data() {
     return {
-      image_load: false
+      isViewed: false,
+      isFavorite: false
+      // isFamily: false,
     };
   },
+
+  created() {
+    this.isViewed =
+      localStorage.getItem(`viewedState:${this.recipe.id}`) === "true";
+    this.isFavorite =
+      localStorage.getItem(`favoriteState:${this.recipe.id}`) === "true";
+  },
+
+  computed: {
+    getTitleStyle() {
+      return {
+        color: this.isViewed ? "rgb(38, 0, 255)" : "black",
+      };
+    },
+  },
+
   props: {
     recipe: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
+  },
 
-    // id: {
-    //   type: Number,
-    //   required: true
-    // },
-    // title: {
-    //   type: String,
-    //   required: true
-    // },
-    // readyInMinutes: {
-    //   type: Number,
-    //   required: true
-    // },
-    // image: {
-    //   type: String,
-    //   required: true
-    // },
-    // aggregateLikes: {
-    //   type: Number,
-    //   required: false,
-    //   default() {
-    //     return undefined;
+  methods: {
+    handleClick(recipeID) {
+      this.navigateToRecipe(recipeID);
+      this.toggleViewed(recipeID);
+    },
+
+    async navigateToRecipe(recipeId) {
+      this.$router.push({ name: "recipe", params: { recipeId } });
+    },
+
+    async toggleFavorite(recipeID) {
+      //TODO need to check if works!
+      if (this.$root.store.username) {
+        this.isFavorite = !this.isFavorite;
+        this.$emit("toggle-favorite", recipeID, this.isFavorite);
+        localStorage.setItem(
+          `favoriteState:${this.recipe.id}`,
+          this.isFavorite
+        );
+
+        if (this.isFavorite) {
+          try {
+            const response = await this.axios.post(
+              this.$root.store.server_domain + "/users/favorites",
+              { recipeId: id },
+              { withCredentials: true }
+            );
+
+            if (response.status === 200) {
+              this.$root.toast(
+                "Add to favorites",
+                "Recipe was added to favorites successfully!",
+                "success"
+              );
+            }
+          } catch (error) {
+            this.$root.toast(
+              "Add to favorites",
+              "Recipe was not added!",
+              "danger"
+            );
+          }
+        }
+      } else {
+        this.$root.toast(
+          "Add to favorites",
+          "You must login to add favorites!",
+          "danger"
+        );
+      }
+    },
+
+    // async toggleFamily() {
+    //   console.log("Hi");
+    //   //TODO need to check if works!
+    //   if (this.$root.store.username) {
+    //     this.$emit("toggle-family", recipeID, this.isFamily);
+    //     // TODO
+    //   } else {
+    //     this.$root.toast(
+    //       "You must login to add favorites!",
+    //       "danger"
+    //     );
     //   }
-    // }
-  }
+    // },
+
+    async toggleViewed(recipeID) {
+      //TODO need to check if works! and to add post for whatched recipes
+      if (this.$root.store.username) {
+        if (!this.isViewed) {
+          this.isViewed = !this.isViewed;
+          this.$emit("toggle-viewed", recipeID, this.isViewed);
+          localStorage.setItem(`viewedState:${this.recipe.id}`, this.isViewed);
+        } else {
+          try {
+            const response = await this.axios.post(
+              this.$root.store.server_domain + "/users/favorites",
+              { recipeId: id },
+              { withCredentials: true }
+            );
+
+            if (response.status === 200) {
+              this.$root.toast(
+                "Add to watch list",
+                "Recipe was added to watch list successfully!",
+                "success"
+              );
+            }
+          } catch (error) {
+            this.$root.toast(
+              "Add to watch list",
+              "Recipe was not added!",
+              "danger"
+            );
+          }
+        }
+      } else {
+        this.$root.toast(
+          "Add to watch list",
+          "You must login to add watched recipes!",
+          "danger"
+        );
+      }
+    },
+
+    updateIsViewed_IsFavorite(flag) {
+      this.isViewed = flag;
+      this.isFavorite = flag;
+    },
+  },
 };
 </script>
 
+
+<!-- #######################################################################################################
+################################################# css ################################################## -->
+
 <style scoped>
+.card-image-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.favorite-icon {
+  font-size: 1.5rem;
+  color: red;
+}
+
 .recipe-preview {
   display: inline-block;
   width: 90%;
@@ -71,6 +242,7 @@ export default {
   position: relative;
   margin: 10px 10px;
 }
+
 .recipe-preview > .recipe-body {
   width: 100%;
   height: 200px;
@@ -118,7 +290,6 @@ export default {
   -webkit-box-flex: 1;
   -moz-box-flex: 1;
   -o-box-flex: 1;
-  box-flex: 1;
   -webkit-flex: 1 auto;
   -ms-flex: 1 auto;
   flex: 1 auto;
@@ -131,7 +302,6 @@ export default {
   -moz-box-flex: 1;
   -o-box-flex: 1;
   -ms-box-flex: 1;
-  box-flex: 1;
   -webkit-flex-grow: 1;
   flex-grow: 1;
   width: 90px;
