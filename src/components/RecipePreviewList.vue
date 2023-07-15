@@ -52,12 +52,7 @@ export default {
     title: {
       type: String,
       required: true,
-    },
-    fromFamily: {
-      type: Boolean,
-      required: false,
-      default: () => false,
-    },
+    }
   },
 
   data() {
@@ -153,19 +148,6 @@ export default {
         localStorage.setItem(`viewedState:${recipe.id}`, isViewed);
       }
     },
-
-    // toggleFamily(recipeId, isFamily) {
-    //   const recipe = this.recipes.find((recipe) => recipe.id === recipeId);
-    //   if (recipe) {
-    //     recipe.isFamily = isFamily;
-    //   }
-    // },
-
-    // isFamily(recipeId) {
-    //   console.log("now");
-    //   // return title === "Family Recipes";
-    //   return true;
-    // },
 
     isRecipeViewed(recipeId) {
       return localStorage.getItem(`viewedState:${recipeId}`) === "true";

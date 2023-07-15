@@ -98,7 +98,7 @@
       },
 
       openModal() {
-        this.$root.$emit('bv::show::modal', 'myModal');
+        this.$root.$emit('bv::show::modal', 'modal-prevent-closing');
       },
 
       changeTextColor(event) {

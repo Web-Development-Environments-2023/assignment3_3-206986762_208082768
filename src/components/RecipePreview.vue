@@ -1,14 +1,10 @@
 <template>
   <div>
     <b-card no-body style="max-width: 20rem">
-      <a
-        style="cursor: pointer"
-        class="card-image-link"
-        @click="handleClick(recipe.id)"
-      >
-        <b-card-img :src="recipe.image" alt="Image"></b-card-img>
+      <a style="cursor: pointer"
+      @click="this.handleClick(recipe.id)">
+        <RecipePreviewImage :recipeObject="recipe"> </RecipePreviewImage>
       </a>
-
       <b-card-body>
         <b-card-title :style="getTitleStyle">{{ recipe.title }}</b-card-title>
         <b-card-sub-title>Recipe</b-card-sub-title><br />
@@ -36,12 +32,15 @@
             {{ recipe.glutenFree ? "No gluten" : "With gluten" }}
           </span>
 
-          <!-- <span v-if="getFamily">
+          <!-- TODO please consider the style. -->
+          <!-- ################### -->
+          <span v-if="isFamily">
             {{ recipe.owner }}
           </span>
-          <span v-if="getFamily">
+          <span v-if="isFamily">
             {{ recipe.whenToPrepare }}
-          </span> -->
+          </span>
+          <!-- ################### -->
         </b-card-text>
 
         <b-button
@@ -61,7 +60,9 @@
           :to="{ name: 'recipe', params: { recipeId: recipe.id } }"
           class="recipe-preview"
         >
-          <b-button variant="primary">Learn More!</b-button>
+          <b-button variant="primary" style="background-color: #04aa6d"
+            >Learn More!</b-button
+          >
         </router-link>
       </b-card-body>
     </b-card>
@@ -73,12 +74,18 @@
 ############################################ scripts ################################################## -->
 
 <script>
+import RecipePreviewImage from "./RecipePreviewImage.vue";
 export default {
+  name: "RecipePreview",
+  components: {
+    RecipePreviewImage,
+  },
+
   data() {
     return {
       isViewed: false,
-      isFavorite: false
-      // isFamily: false,
+      isFavorite: false,
+      isFamily: false,
     };
   },
 
@@ -87,6 +94,7 @@ export default {
       localStorage.getItem(`viewedState:${this.recipe.id}`) === "true";
     this.isFavorite =
       localStorage.getItem(`favoriteState:${this.recipe.id}`) === "true";
+    this.isFamily = this.$parent.title === "Family Recipes";
   },
 
   computed: {
@@ -156,20 +164,6 @@ export default {
       }
     },
 
-    // async toggleFamily() {
-    //   console.log("Hi");
-    //   //TODO need to check if works!
-    //   if (this.$root.store.username) {
-    //     this.$emit("toggle-family", recipeID, this.isFamily);
-    //     // TODO
-    //   } else {
-    //     this.$root.toast(
-    //       "You must login to add favorites!",
-    //       "danger"
-    //     );
-    //   }
-    // },
-
     async toggleViewed(recipeID) {
       //TODO need to check if works! and to add post for whatched recipes
       if (this.$root.store.username) {
@@ -222,14 +216,6 @@ export default {
 ################################################# css ################################################## -->
 
 <style scoped>
-.card-image-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-  text-decoration: none;
-  color: inherit;
-}
-
 .favorite-icon {
   font-size: 1.5rem;
   color: red;
