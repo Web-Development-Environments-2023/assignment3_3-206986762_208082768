@@ -7,7 +7,7 @@
       class="card-image-link"
     >
       <b-card-text class="middle">
-        <div class="text">{{ recipeObject.title }}</div>
+        <div class="text">Click here!</div>
       </b-card-text>
     </b-card>
   </div>

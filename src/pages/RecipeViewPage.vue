@@ -10,8 +10,13 @@
           <td width="55%">
             <h1 style="text-align: center; font-weight: bolder;font-size: 45px; font-family:Georgia, 'Times New Roman', Times, serif;">{{ recipe.title }}</h1>
             <br><br>
+            
+            <h2 v-if="isFromFamily"><span style="font-weight: bold;">Made by:</span> <span style="color: red; font-weight: bold;">{{ recipe.owner }}</span></h2>
+            <h2 v-if="isFromFamily"><span style="font-weight: bold;">Prepared in:</span> <span style="color: rgb(149, 0, 255); font-weight: bold;">{{ recipe.whenToPrepare }}</span><br><br><br></h2>
+
             <h2><span style="font-weight: bold;">Total Time:</span> <span style="color: red; font-weight: bold;">{{ recipe.readyInMinutes }}</span> minutes</h2>
-            <h2><span style="color: red; font-weight: bold;">{{ recipe.aggregateLikes }}</span> likes</h2> <br><br>
+            <h2><span style="color: red; font-weight: bold;">{{ recipe.popularity }}</span> likes</h2> <br>
+           
             <div class="centered-list">
               <ul>
                 <li>
@@ -55,21 +60,20 @@
 
               <div class="wrapper">
                 <div class="wrapped">
-                  <h3><u>Ingredients:</u></h3>
+                  <h3><u>Ingredients:</u></h3> <br>
                   <ul>
                     <li
-                      v-for="(r, index) in recipe.extendedIngredients"
-                      :key="index + '_' + r.id">
-                      <h4 style="font-size:larger;">{{ r.original }}</h4>
+                      v-for="(r, index) in recipe.extendedIngredients" :key="index + '_' + r.id" style="font-weight: bold; font-size: x-large; color: red;">
+                    <h4 style="font-size:x-large; color: black; font-weight: bold;">{{ r.original }}</h4>
                     </li>
                   </ul>
                 </div>
 
                 <div class="wrapped">
-                  <h3><u>Instructions:</u></h3>
+                  <h3><u>Instructions:</u></h3> <br>
                   <ol>
-                    <li v-for="s in recipe.instructions" :key="s.number">
-                      <h4 style="font-size:larger;">{{ s.step }}</h4>
+                    <li v-for="s in recipe._instructions" :key="s.number" style="font-weight: bold; font-size: x-large; color: red;">
+                      <h4 style="font-size:x-large; color: black; font-weight: bold;">{{ s.step }}</h4>
                     </li>
                   </ol>
                 </div>
@@ -93,26 +97,29 @@
   export default {
     data() {
       return { //TODO recipe: null
-        recipe:
-                {
-                  id: 641726,
-                  title: "Dulce De Leche Brownies",
-                  readyInMinutes: 45,
-                  image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
-                  aggregateLikes: 29,
-                  popularity: 5,
-                  vegan: true,
-                  vegetarian: true,
-                  glutenFree: true,
-                  instructions: {},
-                  servings: 4,
-                  ingredients: {}
-                }
+        isFromFamily: false,
+        recipe: null
+                // {
+                //   id: 641726,
+                //   title: "Dulce De Leche Brownies",
+                //   readyInMinutes: 45,
+                //   image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
+                //   aggregateLikes: 29,
+                //   popularity: 5,
+                //   vegan: true,
+                //   vegetarian: true,
+                //   glutenFree: true,
+                //   instructions: {},
+                //   servings: 4,
+                //   ingredients: {}
+                // }
         
       };
     },
     
     async created() { //TODO uncomment this when working with server
+      this.isFromFamily = this.$route.params.family === true;
+
       try {
         let response;
 
@@ -133,11 +140,13 @@
           analyzedInstructions,
           instructions,
           extendedIngredients,
-          aggregateLikes,
+          popularity,
           readyInMinutes,
           image,
           title
-        } = response.data.recipe;
+        } = response.data;
+
+        console.log(response.data);
 
         let _instructions = analyzedInstructions
           .map((fstep) => {
@@ -151,11 +160,13 @@
           _instructions,
           analyzedInstructions,
           extendedIngredients,
-          aggregateLikes,
+          popularity,
           readyInMinutes,
           image,
           title
         };
+
+        console.log(_recipe);
 
         this.recipe = _recipe;
       } catch (error) {
@@ -171,13 +182,6 @@
 ################################################# css ################################################## -->
 
 <style scoped>
-
-
-  /* table, th, td {
-    border: 1px solid black;
-    padding: 8px;
-    text-align: left;
-  } */
 
   .container{
     margin-top: 80px;
@@ -228,7 +232,7 @@
   }
 
   h3 {
-    font-size:x-large;
+    font-size: 28px;
     color: red;
     font-weight: bold;
   }
