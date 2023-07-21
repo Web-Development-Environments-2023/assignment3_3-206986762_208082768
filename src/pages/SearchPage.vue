@@ -38,15 +38,31 @@
         </li>
       </ul>
     </div>
-    <!-- // TODO view the recipes -->
+
+
+    <table width="100%">
+      <br><br>
+      <tr>
+        <td width="100%">
+          <RecipePreviewList ref="previewList"  title="Search Result"></RecipePreviewList>
+        </td>
+      </tr>
+    </table>
+
   </div>
 </template>
 
 <!-- #######################################################################################################
 ############################################ scripts ################################################## -->
 <script>
+
+import RecipePreviewList from "../components/RecipePreviewList";
 export default {
   name: "SearchPage",
+  components: {
+    RecipePreviewList,
+  },
+  
   data() {
     return {
       text: "",
@@ -70,10 +86,11 @@ export default {
       const searches = localStorage.getItem("recentSearches");
       return searches ? JSON.parse(searches) : [];
     },
-    search() {
+    async search() {
       console.log("Search initiated with query:", this.text);
       this.closeRecentSearches();
       this.saveSearch(this.text);
+      this.$refs.previewList.searchQuery(this.text, number, cusineType, dietType, intoleranceType, sortBy)
     },
     openRecentSearches(event) {
       event.stopPropagation();
