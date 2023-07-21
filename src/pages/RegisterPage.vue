@@ -313,8 +313,8 @@
             this.$root.store.server_domain + "/Register",
             {
               username: this.form.username,
-              firstname: this.form.firstName,
-              lastname: this.form.lastName,
+              first_name: this.form.firstName,
+              last_name: this.form.lastName,
               email: this.form.email,
               country: this.form.country,
               password: this.form.password
