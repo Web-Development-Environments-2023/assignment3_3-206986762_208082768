@@ -2,7 +2,7 @@
   <div>
     <b-card no-body style="max-width: 20rem">
       <a style="cursor: pointer"
-      @click="this.handleClick(recipe.id)">
+      @click="handleClick(recipe.id)">
         <RecipePreviewImage :recipeObject="recipe"> </RecipePreviewImage>
       </a>
       <b-card-body>
@@ -31,16 +31,6 @@
           <span :style="recipe.glutenFree ? 'color: blue' : 'color: red;'">
             {{ recipe.glutenFree ? "No gluten" : "With gluten" }}
           </span>
-
-          <!-- TODO please consider the style. -->
-          <!-- ################### -->
-          <span v-if="isFamily">
-            {{ recipe.owner }}
-          </span>
-          <span v-if="isFamily">
-            {{ recipe.whenToPrepare }}
-          </span>
-          <!-- ################### -->
         </b-card-text>
 
         <b-button
@@ -84,8 +74,7 @@ export default {
   data() {
     return {
       isViewed: false,
-      isFavorite: false,
-      isFamily: false,
+      isFavorite: false
     };
   },
 
@@ -94,7 +83,6 @@ export default {
       localStorage.getItem(`viewedState:${this.recipe.id}`) === "true";
     this.isFavorite =
       localStorage.getItem(`favoriteState:${this.recipe.id}`) === "true";
-    this.isFamily = this.$parent.title === "Family Recipes";
   },
 
   computed: {

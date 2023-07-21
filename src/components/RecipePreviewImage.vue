@@ -1,16 +1,15 @@
 <template>
   <div class="image">
-    <!-- <a
-      style="cursor: pointer"
+    <b-card
+      overlay
+      :img-src="recipeObject.image"
+      img-alt="Image"
       class="card-image-link"
-    > -->
-      <b-card overlay :img-src="recipeObject.image" img-alt="Image"
-      class="card-image-link">
-        <b-card-text class="middle">
-          <div class="text">{{ recipeObject.title }}</div>
-        </b-card-text>
-      </b-card>
-    <!-- </a> -->
+    >
+      <b-card-text class="middle">
+        <div class="text">{{ recipeObject.title }}</div>
+      </b-card-text>
+    </b-card>
   </div>
 </template>
 
@@ -25,11 +24,11 @@ export default {
       required: true,
     },
   },
-  methods:{
-    async handleClick(recipeID){
-        this.$emit('handle-click', recipeID)
-    }
-  }
+  methods: {
+    async handleClick(recipeID) {
+      this.$emit("handle-click", recipeID);
+    },
+  },
 };
 </script>
 

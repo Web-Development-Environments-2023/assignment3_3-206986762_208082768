@@ -27,6 +27,8 @@ import {
   SidebarPlugin,
   IconsPlugin,
   ModalPlugin,
+  FormCheckboxPlugin,
+  FormTextareaPlugin,
 } from "bootstrap-vue";
 [
   FormGroupPlugin,
@@ -41,7 +43,9 @@ import {
   LayoutPlugin,
   SidebarPlugin,
   IconsPlugin,
-  ModalPlugin
+  ModalPlugin,
+  FormCheckboxPlugin,
+  FormTextareaPlugin,
 ].forEach((x) => Vue.use(x));
 Vue.use(Vuelidate);
 
