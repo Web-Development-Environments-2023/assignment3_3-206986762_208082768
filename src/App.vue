@@ -7,49 +7,49 @@
           <i
             class="material-icons search__icon"
             id="search"
-            style="margin-top: 5px"
+            style="margin-top: 5px;"
             >search</i
           ></router-link
         >
         <h1
-          style="
-            color: rgb(255, 47, 0);
-            text-align: center;
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial,
-              sans-serif;
-          "
+          style="color:rgb(255, 47, 0); text-align: center; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"
         >
           Flavor Fusion
         </h1>
       </div>
 
       <div>
-        <b-button v-b-toggle.sidebar-border id="btn">&#9776;</b-button>
+        <b-button v-b-toggle.sidebar-border id="btn" @click="toggleSidebar"
+          >&#9776;</b-button
+        >
         <b-sidebar
           id="sidebar-border"
           sidebar-class="border-right border-danger"
           width="280px"
           shadow
+          v-model="sidebarVisible"
+          @hidden="resetSidebar"
         >
           <div id="nav">
             <b-nav vertical>
               <div v-if="!$root.store.username">
                 <h1
-                  style="
-                    left: 0;
-                    font-size: 40px;
-                    font-family: 'Gill Sans', 'Gill Sans MT', Calibri,
-                      'Trebuchet MS', sans-serif;
-                  "
+                  style="left: 0; font-size: 40px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"
                 >
                   Hello Guest,
                 </h1>
                 ____________________________ <br /><br />
                 <b-nav vertical>
-                  <router-link :to="{ name: 'register' }" class="navItems"
+                  <router-link
+                    :to="{ name: 'register' }"
+                    class="navItems"
+                    @click.native="closeSidebar"
                     >Register</router-link
                   >
-                  <router-link :to="{ name: 'login' }" class="navItems"
+                  <router-link
+                    :to="{ name: 'login' }"
+                    class="navItems"
+                    @click.native="closeSidebar"
                     >Login</router-link
                   >
                 </b-nav>
@@ -76,13 +76,22 @@
                   variant="primary"
                   no-flip
                 >
-                  <b-dropdown-item class="dropdownItems" href="#/favorites"
+                  <b-dropdown-item
+                    class="dropdownItems"
+                    href="#/favorites"
+                    @click.native="closeSidebar"
                     >Favorites</b-dropdown-item
                   >
-                  <b-dropdown-item class="dropdownItems" href="#/myRecipes"
+                  <b-dropdown-item
+                    class="dropdownItems"
+                    href="#/myRecipes"
+                    @click.native="closeSidebar"
                     >My Recipes</b-dropdown-item
                   >
-                  <b-dropdown-item class="dropdownItems" href="#/familyRecipes"
+                  <b-dropdown-item
+                    class="dropdownItems"
+                    href="#/familyRecipes"
+                    @click.native="closeSidebar"
                     >La Familia</b-dropdown-item
                   >
                 </b-dropdown>
@@ -91,14 +100,19 @@
                   <a href="#" class="navItems" @click="openModal"
                     >Create new recipe</a
                   >
-                  <CreateNewRecipeModal />
                 </b-nav>
               </div>
 
-              <router-link :to="{ name: 'main' }" class="navItems"
+              <router-link
+                :to="{ name: 'main' }"
+                class="navItems"
+                @click.native="closeSidebar"
                 >Home</router-link
               >
-              <router-link :to="{ name: 'search' }" class="navItems"
+              <router-link
+                :to="{ name: 'search' }"
+                class="navItems"
+                @click.native="closeSidebar"
                 >Search</router-link
               >
             </b-nav>
@@ -106,10 +120,16 @@
 
           <footer class="footer">
             <b-nav vertical>
-              <router-link :to="{ name: 'about' }" class="navItems"
+              <router-link
+                :to="{ name: 'about' }"
+                class="navItems"
+                @click.native="closeSidebar"
                 >About</router-link
               >
-              <router-link :to="{ name: 'contactUs' }" class="navItems"
+              <router-link
+                :to="{ name: 'contactUs' }"
+                class="navItems"
+                @click.native="closeSidebar"
                 >Contact Us</router-link
               >
             </b-nav>
@@ -118,15 +138,16 @@
       </div>
     </header>
     <router-view />
+
+    <CreateNewRecipeModal v-if="isModalOpen" @close="closeModal" />
   </div>
 </template>
-
 
 <!-- #######################################################################################################
 ############################################ scripts ################################################## -->
 
 <script>
-import CreateNewRecipeModal from "./components/CreateNewRecipeModal.vue";
+import CreateNewRecipeModal from "./components/CreateNewRecipeModal";
 export default {
   name: "App",
   components: {
@@ -135,6 +156,7 @@ export default {
 
   data() {
     return {
+      sidebarVisible: false,
       isModalOpen: false,
       isClicked: false,
       textcolor: "",
@@ -142,7 +164,20 @@ export default {
   },
 
   methods: {
+    toggleSidebar() {
+      this.sidebarVisible = !this.sidebarVisible;
+    },
+
+    closeSidebar() {
+      this.sidebarVisible = false;
+    },
+
+    resetSidebar() {
+      this.sidebarVisible = false;
+    },
+
     Logout() {
+      this.sidebarVisible = false;
       this.$root.store.logout();
       this.$root.toast("Logout", "User logged out successfully", "success");
 
@@ -157,6 +192,12 @@ export default {
 
     openModal() {
       this.$root.$emit("bv::show::modal", "modal-prevent-closing");
+      this.isModalOpen = true;
+      this.sidebarVisible = false;
+    },
+
+    closeModal() {
+      this.isModalOpen = false;
     },
 
     changeTextColor(event) {
@@ -164,9 +205,13 @@ export default {
       this.isClicked = !this.isClicked;
     },
   },
+
+  beforeRouteUpdate(to, from, next) {
+    this.resetSidebar();
+    next();
+  },
 };
 </script>
-
 
 <!-- #######################################################################################################
 ################################################# css ################################################## -->

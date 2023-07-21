@@ -1,39 +1,27 @@
 <template>
-  <b-container fluid>
-    <div v-if="emptyResult">No Results Found!</div>
 
+  <b-container fluid class="container">
+    
+    <div v-if="emptyResult"> No Results Found!</div>
+          
     <div v-if="title == 'Random Recipes' || title == 'Last Watched Recipes'">
       <b-row>
-        <b-col v-for="r in recipes" :key="r.id" cols="6">
-          <RecipePreview
-            ref="previews"
-            class="recipePreview"
-            :recipe="r"
-            :isFavorite="isFavoriteRecipe(r.id)"
-            @toggle-favorite="toggleFavorite"
-            :isViewed="isRecipeViewed(r.id)"
-            @toggle-viewed="toggleViewed"
-          ></RecipePreview>
-        </b-col>
+          <b-col v-for="r in recipes" :key="r.id" cols="6">
+            <RecipePreview ref="previews" class="recipePreview" :recipe="r" :isFavorite="isFavoriteRecipe(r.id)" @toggle-favorite="toggleFavorite" :isViewed="isRecipeViewed(r.id)" @toggle-viewed="toggleViewed"></RecipePreview>
+          </b-col>
       </b-row>
     </div>
 
     <div v-else>
       <b-row>
-        <b-col v-for="r in recipes" :key="r.id" cols="3">
-          <RecipePreview
-            ref="previews"
-            class="recipePreview"
-            :recipe="r"
-            :isFavorite="isFavoriteRecipe(r.id)"
-            @toggle-favorite="toggleFavorite"
-            :isViewed="isRecipeViewed(r.id)"
-            @toggle-viewed="toggleViewed"
-          ></RecipePreview>
-        </b-col>
+          <b-col v-for="r in recipes" :key="r.id" cols="3">
+            <RecipePreview :isFamily="true" ref="previews" class="recipePreview" :recipe="r" :isFavorite="isFavoriteRecipe(r.id)" @toggle-favorite="toggleFavorite" :isViewed="isRecipeViewed(r.id)" @toggle-viewed="toggleViewed"></RecipePreview>
+          </b-col>
       </b-row>
     </div>
+
   </b-container>
+    
 </template>
   
   
@@ -41,285 +29,276 @@
 ############################################ scripts ################################################## -->
   
 <script>
-import RecipePreview from "./RecipePreview.vue";
-export default {
-  name: "RecipePreviewList",
-  components: {
-    RecipePreview,
-  },
 
-  props: {
-    title: {
-      type: String,
-      required: true,
-    }
-  },
+  import RecipePreview from "./RecipePreview.vue";
+  export default {
+    name: "RecipePreviewList",
+    components: {
+      RecipePreview
+    },
+    
+    props: {
+      title: {
+        type: String,
+        required: true
+      }
+    },
+  
+    data() {
+      return {
+        emptyResult:false,
+        recipes:[ //TODO delete this temp data
+                  {
+                    id: 641726,
+                    title: "Dulce De Leche Brownies",
+                    readyInMinutes: 45,
+                    image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
+                    aggregateLikes: 29,
+                    vegan: true,
+                    vegetarian: true,
+                    glutenFree: true
+                  },
+                  {
+                    id: 651389,
+                    title: "Medenjaci - Croatian Honey Spice Cookies",
+                    readyInMinutes: 45,
+                    image: "https://spoonacular.com/recipeImages/651389-556x370.jpg",
+                    aggregateLikes: 6,
+                    vegan: true,
+                    vegetarian: false,
+                    glutenFree: false
+                  },
+                  {
+                    id: 425578,
+                    title: "meast",
+                    readyInMinutes: 35,
+                    image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
+                    aggregateLikes: 99,
+                    vegan: true,
+                    vegetarian: true,
+                    glutenFree: false
+                  }
+                ]
+      };
+    },
+  
+    mounted() { //TODO uncomment this when using the server
+      if (this.title == 'Random Recipes'){
+        this.getRandomRecipes();
+      }
 
-  data() {
-    return {
-      emptyResult: false,
-      recipes: [
-        //TODO delete this temp data
-        {
-          id: 641726,
-          title: "Dulce De Leche Brownies",
-          readyInMinutes: 45,
-          image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
-          aggregateLikes: 29,
-          vegan: true,
-          vegetarian: true,
-          glutenFree: true,
-          owner: "Dad",
-          whenToPrepare: "Today",
-        },
-        {
-          id: 651389,
-          title: "Medenjaci - Croatian Honey Spice Cookies",
-          readyInMinutes: 45,
-          image: "https://spoonacular.com/recipeImages/651389-556x370.jpg",
-          aggregateLikes: 6,
-          vegan: true,
-          vegetarian: false,
-          glutenFree: false,
-          owner: "Dad",
-          whenToPrepare: "Today",
-        },
-        {
-          id: 425578,
-          title: "meast",
-          readyInMinutes: 35,
-          image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
-          aggregateLikes: 99,
-          vegan: true,
-          vegetarian: true,
-          glutenFree: false,
-          owner: "Dad",
-          whenToPrepare: "Today",
-        },
-      ],
-    };
-  },
+      // if (this.title == 'Last Watched Recipes'){
+      //   this.getLastWatchedRecipes();
+      // }
 
-  mounted() {
-    //TODO uncomment this when using the server
-    // if (this.title == 'Random Recipes'){
-    //   this.getRandomRecipes();
-    // }
-    // if (this.title == 'Last Watched Recipes'){
-    //   this.getLastWatchedRecipes();
-    // }
-    // if (this.title == 'Favorite Recipes'){
-    //   this.getFavoriteRecipes();
-    // }
-    // if (this.title == 'My Recipes'){
-    //   this.getMyRecipes();
-    // }
-    // if (this.title == 'Family Recipes'){
-    //   this.getFamilyRecipes();
-    // }
-  },
+      // if (this.title == 'Favorite Recipes'){
+      //   this.getFavoriteRecipes();
+      // }
 
-  created() {
-    const userLoggedIn = this.$root.store.username;
-    if (!userLoggedIn) {
-      this.clearState();
-    } else {
-      this.restoreState();
-    }
-  },
+      // if (this.title == 'My Recipes'){
+      //   this.getMyRecipes();
+      // }
 
-  methods: {
-    toggleFavorite(recipeId, isFavorite) {
-      const recipe = this.recipes.find((recipe) => recipe.id === recipeId);
-      if (recipe) {
-        recipe.isFavorite = isFavorite;
-        localStorage.setItem(`favoriteState:${recipe.id}`, isFavorite);
+      // if (this.title == 'Family Recipes'){
+      //   this.getFamilyRecipes();
+      // }
+    },
+  
+    created() {
+      const userLoggedIn = this.$root.store.username;
+      if (!userLoggedIn) {
+        this.clearState();
+      } 
+      else {
+        this.restoreState();
       }
     },
 
-    isFavoriteRecipe(recipeId) {
-      return localStorage.getItem(`favoriteState:${recipeId}`) === "true";
-    },
+    methods: {
+      toggleFavorite(recipeId, isFavorite) {
+        const recipe = this.recipes.find(recipe => recipe.id === recipeId);
+        if (recipe) {
+          recipe.isFavorite = isFavorite;
+          localStorage.setItem(`favoriteState:${recipe.id}`, isFavorite);
+        }
+      },
 
-    toggleViewed(recipeId, isViewed) {
-      const recipe = this.recipes.find((recipe) => recipe.id === recipeId);
-      if (recipe) {
-        recipe.isViewed = isViewed;
-        localStorage.setItem(`viewedState:${recipe.id}`, isViewed);
-      }
-    },
+      isFavoriteRecipe(recipeId) {
+        return localStorage.getItem(`favoriteState:${recipeId}`) === 'true';
+      },
 
-    isRecipeViewed(recipeId) {
-      return localStorage.getItem(`viewedState:${recipeId}`) === "true";
-    },
+      toggleViewed(recipeId, isViewed) {
+        const recipe = this.recipes.find(recipe => recipe.id === recipeId);
+        if (recipe) {
+          recipe.isViewed = isViewed;
+          localStorage.setItem(`viewedState:${recipe.id}`, isViewed);
+        }
+      },
 
-    clearState() {
-      this.recipes.forEach((recipe) => {
-        recipe.isViewed = false;
-        recipe.isFavorite = false;
-      });
+      isRecipeViewed(recipeId) {
+        return localStorage.getItem(`viewedState:${recipeId}`) === 'true';
+      },
 
-      this.$nextTick(() => {
-        Object.values(this.$refs.previews).forEach((previewComponent) => {
-          if (previewComponent) {
-            previewComponent.updateIsViewed_IsFavorite(false);
-          }
-        });
-      });
-    },
-
-    restoreState() {
-      this.recipes.forEach((recipe) => {
-        recipe.isFavorite =
-          localStorage.getItem(`favoriteState:${recipe.id}`) === "true";
-        recipe.isViewed =
-          localStorage.getItem(`viewedState:${recipe.id}`) === "true";
-      });
-    },
-
-    // ################################################################################
-    // ################################################################################
-
-    async getRandomRecipes() {
-      try {
-        const response = await this.axios.post(
-          this.$root.store.server_domain + "/recipes/randomRecipes",
-          { withCredentials: true }
-        );
-
-        this.getRecipesList(response);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async getLastWatchedRecipes() {
-      try {
-        const response = await this.axios.get(
-          this.$root.store.server_domain + "/users/lastWatchedRecipes",
-          { withCredentials: true }
-        );
-
-        this.getRecipesList(response);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async getFavoriteRecipes() {
-      try {
-        const response = await this.axios.get(
-          this.$root.store.server_domain + "/users/favorites",
-          { withCredentials: true }
-        );
-
-        this.getRecipesList(response);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async getMyRecipes() {
-      try {
-        const response = await this.axios.get(
-          this.$root.store.server_domain + "/users/myAllRecipes",
-          { withCredentials: true }
-        );
-
-        this.getRecipesList(response);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async getFamilyRecipes() {
-      try {
-        const response = await this.axios.get(
-          this.$root.store.server_domain + "/users/familyRecipes",
-          { withCredentials: true }
-        );
-
-        this.getRecipesList(response);
-      } catch (error) {
-        console.log(error);
-        number;
-      }
-    },
-
-    async searchQuery(query, number, cuisine, diet, intolerance, sortFilter) {
-      this.emptyResult = false;
-      this.recipes = [];
-      let temp = [];
-      if (cuisine == "ALL") {
-        cuisine = undefined;
-      }
-
-      if (diet == "None") {
-        diet = undefined;
-      }
-
-      if (intolerance == "None") {
-        intolerance = undefined;
-      }
-
-      try {
-        const response = await this.axios.post("/recipes/search", {
-          params: {
-            query: query,
-            number: number,
-            cuisine: cuisine,
-            diet: diet,
-            intolerance: intolerance,
-          },
+      clearState() {
+        this.recipes.forEach(recipe => {
+          recipe.isViewed = false;
+          recipe.isFavorite = false;
         });
 
-        if (response.data.length != 0) {
-          for (let i = 0; i < response.data.length; i++) {
-            temp.push(response.data[i]);
-          }
-        } else {
-          this.emptyResult = true;
-        }
+        this.$nextTick(() => {
+          Object.values(this.$refs.previews).forEach(previewComponent => {
+            if (previewComponent) {
+              previewComponent.updateIsViewed_IsFavorite(false);
+            }
+          });
+        });
+      },
 
-        if (sortFilter == "Default") {
-        } else if (sortFilter == "Prepare Time") {
-          temp.sort(
-            (a, b) => parseInt(a.readyInMinutes) - parseInt(b.readyInMinutes)
-          );
-        } else {
-          // Stars
-          temp.sort(
-            (a, b) => parseFloat(a.popularity) - parseFloat(b.popularity)
-          );
-        }
+      restoreState() {
+        this.recipes.forEach(recipe => {
+          recipe.isFavorite = localStorage.getItem(`favoriteState:${recipe.id}`) === 'true';
+          recipe.isViewed = localStorage.getItem(`viewedState:${recipe.id}`) === 'true';
+        });
+      },
 
-        this.recipes = temp;
-        return;
-      } catch (error) {
-        console.log(error);
-      }
-    },
+      // ################################################################################
+      // ################################################################################
 
-    async getRecipesList(response) {
-      const recipes = response.data;
-      for (let i = 0; i < recipes.length; i++) {
+      async getRandomRecipes() {
         try {
-          const check = await fetch(recipes[i].image);
-          if (!check.ok) {
-            recipes[i].image =
-              "https://img.freepik.com/free-vector/404-error-background-with-orange-piece-flat-style_23-2147761281.jpg";
-          }
-        } catch (error) {
-          recipes[i].image =
-            "https://img.freepik.com/free-vector/404-error-background-with-orange-piece-flat-style_23-2147761281.jpg";
-        }
-      }
+          const response = await this.axios.post(
+            this.$root.store.server_domain + "/recipes/randomRecipes",
+            { withCredentials: true }
+          );
 
-      this.recipes = [];
-      this.recipes.push(...recipes);
-    },
-  },
-};
+          this.getRecipesList(response);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      async getLastWatchedRecipes(){
+        try {
+          const response = await this.axios.get(
+            this.$root.store.server_domain + "/users/lastWatchedRecipes",
+            { withCredentials: true }
+          );
+
+          this.getRecipesList(response);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      async getFavoriteRecipes(){
+        try {
+          const response = await this.axios.get(
+            this.$root.store.server_domain + "/users/favorites",
+            { withCredentials: true }
+          );
+
+          this.getRecipesList(response);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      async getMyRecipes(){
+        try {
+          const response = await this.axios.get(
+            this.$root.store.server_domain + "/users/myAllRecipes",
+            { withCredentials: true }
+          );
+
+          this.getRecipesList(response);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      async getFamilyRecipes(){
+        try {
+          const response = await this.axios.get(
+            this.$root.store.server_domain + "/users/familyRecipes",
+            { withCredentials: true }
+          );
+
+          this.getRecipesList(response);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      async searchQuery(query, number, cuisine, diet, intolerance, sortFilter){
+        this.emptyResult = false
+        this.recipes = []
+        let temp = []
+        if(cuisine == "ALL"){
+          cuisine = undefined
+        }
+
+        if(diet == "None"){
+          diet = undefined
+        }
+
+        if(intolerance == "None"){
+          intolerance = undefined
+        }
+        
+        try {
+          const response = await this.axios.post(
+            "/recipes/search",
+            {params:{query:query, number:number, cuisine:cuisine, diet:diet, intolerance:intolerance}},
+          );
+
+          if (response.data.length != 0){
+            for (let i = 0; i < response.data.length; i++){
+              temp.push(response.data[i])
+            }
+          }
+
+          else {
+            this.emptyResult = true
+          }
+
+          if(sortFilter == "Default"){
+          }
+
+          else if(sortFilter == "Prepare Time"){
+            temp.sort((a, b) => parseInt(a.readyInMinutes) - parseInt(b.readyInMinutes));
+          }
+
+          else{ // Stars
+            temp.sort((a, b) => parseFloat(a.popularity) - parseFloat(b.popularity));
+          }
+          
+          this.recipes = temp
+          return
+
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      async getRecipesList(response){
+        const recipes = response.data;
+        for (let i = 0; i < recipes.length; i++){
+          try {
+            const check = await fetch(recipes[i].image);
+            if (!check.ok){
+              recipes[i].image="https://img.freepik.com/free-vector/404-error-background-with-orange-piece-flat-style_23-2147761281.jpg"
+            }
+          } catch (error) {
+            recipes[i].image="https://img.freepik.com/free-vector/404-error-background-with-orange-piece-flat-style_23-2147761281.jpg"
+          }
+        }
+          
+        this.recipes = [];
+        this.recipes.push(...recipes);
+      }
+    }
+  };
+  
 </script>
   
   
@@ -327,8 +306,10 @@ export default {
 ################################################# css ################################################## -->
   
 <style lang="scss" scoped>
-.container {
-  min-height: 400px;
-}
+  
+  .container {
+    min-height: 400px;
+  }
+  
 </style>
   

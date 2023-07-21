@@ -7,8 +7,22 @@
       </a>
       <b-card-body>
         <b-card-title :style="getTitleStyle">{{ recipe.title }}</b-card-title>
-        <b-card-sub-title>Recipe</b-card-sub-title><br />
-
+        <b-card-sub-title>
+          Recipe <br />
+          <span v-if="isFamily"
+            >Made by:
+            <span style="color: red; font-weight: bold;">{{
+              recipe.owner
+            }}</span
+            ><br
+          /></span>
+          <span v-if="isFamily"
+            >Prepared in:
+            <span style="color: rgb(149, 0, 255); font-weight: bold;">{{
+              recipe.whenToPrepare
+            }}</span></span
+          > </b-card-sub-title
+        ><br />
         <b-card-text>
           <span style="color: red; font-weight: bold">{{
             recipe.readyInMinutes
@@ -78,6 +92,19 @@ export default {
     };
   },
 
+  props: {
+    recipe: {
+      type: Object,
+      required: true,
+    },
+
+    isFamily: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+
   created() {
     this.isViewed =
       localStorage.getItem(`viewedState:${this.recipe.id}`) === "true";
@@ -93,12 +120,6 @@ export default {
     },
   },
 
-  props: {
-    recipe: {
-      type: Object,
-      required: true,
-    },
-  },
 
   methods: {
     handleClick(recipeID) {
@@ -107,7 +128,10 @@ export default {
     },
 
     async navigateToRecipe(recipeId) {
-      this.$router.push({ name: "recipe", params: { recipeId } });
+      this.$router.push({
+        name: "recipe",
+        params: { recipeId, family: this.isFamily },
+      });
     },
 
     async toggleFavorite(recipeID) {
@@ -124,7 +148,7 @@ export default {
           try {
             const response = await this.axios.post(
               this.$root.store.server_domain + "/users/favorites",
-              { recipeId: id },
+              { recipeId: recipeID },
               { withCredentials: true }
             );
 
@@ -152,43 +176,30 @@ export default {
       }
     },
 
-    async toggleViewed(recipeID) {
-      //TODO need to check if works! and to add post for whatched recipes
+    async toggleViewed(recipeID) { //TODO need to check if works!
       if (this.$root.store.username) {
-        if (!this.isViewed) {
+
+        if (!this.isViewed){
           this.isViewed = !this.isViewed;
-          this.$emit("toggle-viewed", recipeID, this.isViewed);
+          this.$emit('toggle-viewed', recipeID, this.isViewed);
           localStorage.setItem(`viewedState:${this.recipe.id}`, this.isViewed);
-        } else {
+
           try {
             const response = await this.axios.post(
-              this.$root.store.server_domain + "/users/favorites",
-              { recipeId: id },
+              this.$root.store.server_domain + "/users/lastWatchedRecipes",
+              {recipeId: recipeID},
               { withCredentials: true }
             );
 
-            if (response.status === 200) {
-              this.$root.toast(
-                "Add to watch list",
-                "Recipe was added to watch list successfully!",
-                "success"
-              );
+            if (response.status === 200){
+              this.$root.toast("Add to watch list", "Recipe was added to watch list successfully!", "success");
             }
-          } catch (error) {
-            this.$root.toast(
-              "Add to watch list",
-              "Recipe was not added!",
-              "danger"
-            );
+          } catch(error){
+            console.log(error);
+            this.$root.toast("Add to watch list", "Recipe was not added!", "danger");
           }
         }
-      } else {
-        this.$root.toast(
-          "Add to watch list",
-          "You must login to add watched recipes!",
-          "danger"
-        );
-      }
+      } 
     },
 
     updateIsViewed_IsFavorite(flag) {
