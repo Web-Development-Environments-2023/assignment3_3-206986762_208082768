@@ -15,16 +15,54 @@
       </div>
     </div>
 
-    <div v-if="showRecentSearches && recentSearches.length > 0" class="mt-3 position-relative">
-      <small class="text-danger font-weight-bold" style="text-shadow: 2px 2px 4px rgba(248, 244, 5, 0.89)">
+    <b-form-select
+      v-model="selectedCuisine"
+      :options="cuisineOptions"
+      placeholder="Select Cuisine"
+      class="mb-3"
+    ></b-form-select>
+
+    <b-form-select
+      v-model="selectedDiet"
+      :options="dietOptions"
+      placeholder="Select Diet"
+      class="mb-3"
+    ></b-form-select>
+
+    <b-form-select
+      v-model="selectedIntolerance"
+      :options="intoleranceOptions"
+      placeholder="Select Intolerance"
+      class="mb-3"
+    ></b-form-select>
+    <b-form-select
+      v-model="resultsPerPage"
+      :options="resultsPerPageOptions"
+      placeholder="Results Per Page"
+      class="mb-3"
+    ></b-form-select>
+
+    <div
+      v-if="showRecentSearches && recentSearches.length > 0"
+      class="mt-3 position-relative"
+    >
+      <small
+        class="text-danger font-weight-bold"
+        style="text-shadow: 2px 2px 4px rgba(248, 244, 5, 0.89)"
+      >
         Recent Searches
       </small>
 
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <button class="btn btn-danger btn-sm close-button" @click="closeRecentSearches">
+        <button
+          class="btn btn-danger btn-sm close-button"
+          @click="closeRecentSearches"
+        >
           <span aria-hidden="true">&times;</span>
         </button>
-        <button @click="clearRecentSearches" class="btn btn-danger btn-sm">Clear Recent Searches</button>
+        <button @click="clearRecentSearches" class="btn btn-danger btn-sm">
+          Clear Recent Searches
+        </button>
       </div>
 
       <ul class="list-group mt-3" ref="recentSearchesList">
@@ -45,6 +83,12 @@
 <!-- #######################################################################################################
 ############################################ scripts ################################################## -->
 <script>
+import {
+  cuisineOptions,
+  dietOptions,
+  intoleranceOptions,
+  resultsPerPageOptions,
+} from "../assets/searchOptions.js";
 export default {
   name: "SearchPage",
   data() {
@@ -52,11 +96,21 @@ export default {
       text: "",
       recentSearches: [],
       showRecentSearches: false,
+      selectedCuisine: null,
+      cuisineOptions, // Use the imported cuisineOptions
+      selectedDiet: null,
+      dietOptions, // Use the imported dietOptions
+      selectedIntolerance: null,
+      intoleranceOptions, // Use the imported intoleranceOptions
+      resultsPerPage: null,
+      resultsPerPageOptions, // Use the imported resultsPerPageOptions
     };
   },
   mounted() {
     this.recentSearches = this.getRecentSearches();
+    this.resultsPerPage = 5;
   },
+
   methods: {
     saveSearch(query) {
       const searches = localStorage.getItem("recentSearches");
@@ -71,10 +125,16 @@ export default {
       return searches ? JSON.parse(searches) : [];
     },
     search() {
-      console.log("Search initiated with query:", this.text);
+      console.log(
+        "Search initiated with query:",
+        this.text,
+        "and cuisine:",
+        this.selectedCuisine
+      );
       this.closeRecentSearches();
       this.saveSearch(this.text);
     },
+
     openRecentSearches(event) {
       event.stopPropagation();
       if (this.recentSearches.length > 0) {
