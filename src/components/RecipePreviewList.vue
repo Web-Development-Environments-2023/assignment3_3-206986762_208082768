@@ -90,9 +90,9 @@
     },
   
     mounted() { //TODO uncomment this when using the server
-      // if (this.title == 'Random Recipes'){
-      //   this.getRandomRecipes();
-      // }
+      if (this.title == 'Random Recipes'){
+        this.getRandomRecipes();
+      }
 
       // if (this.title == 'Last Watched Recipes'){
       //   this.getLastWatchedRecipes();
@@ -106,9 +106,9 @@
         this.getMyRecipes();
       }
 
-      // if (this.title == 'Family Recipes'){
-      //   this.getFamilyRecipes();
-      // }
+      if (this.title == 'Family Recipes'){
+        this.getFamilyRecipes();
+      }
     },
   
     created() {
@@ -227,7 +227,7 @@
         try {
           const response = await this.axios.get(
             this.$root.store.server_domain + "/users/familyRecipes",
-            { withCredentials: true }
+            {withCredentials: true}
           );
 
           this.getRecipesList(response);

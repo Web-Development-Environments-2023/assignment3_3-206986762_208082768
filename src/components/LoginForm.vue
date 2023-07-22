@@ -97,7 +97,7 @@ export default {
     },
     async Login() {
       try {
-
+        this.axios.defaults.withCredentials = true;
         const response = await this.axios.post(
           this.$root.store.server_domain +"/Login",
           {
@@ -105,12 +105,15 @@ export default {
             password: this.form.password
           }
         );
+        this.axios.defaults.withCredentials = false;
+
         this.$root.store.login(this.form.username);
         if (!(this.$route.name === "main")){
           this.$router.push("/");
         }
       } catch (err) {
         this.form.submitError = err.response.data.message;
+        this.axios.defaults.withCredentials = false;
       }
     },
 
