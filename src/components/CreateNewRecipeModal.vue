@@ -9,7 +9,11 @@
         @hidden="resetModal"
         @ok="handleOk"
       >
-        <form ref="form" @submit.stop.prevent="handleSubmit">
+        <form
+          ref="form"
+          @submit.stop.prevent="handleSubmit"
+          @reset.prevent="resetModal"
+        >
           <b-form-group
             label="Title"
             label-for="title-input"
@@ -20,6 +24,7 @@
               id="title-input"
               v-model="title"
               :state="titleState"
+              placeholder="British Cake"
               required
             ></b-form-input>
           </b-form-group>
@@ -35,6 +40,7 @@
               v-model="readyInMinutes"
               :state="minutesState"
               type="number"
+              placeholder="120"
               required
             ></b-form-input>
           </b-form-group>
@@ -76,6 +82,7 @@
               v-model="servings"
               :state="servingsState"
               type="number"
+              placeholder="10"
               required
             ></b-form-input>
           </b-form-group>
@@ -91,6 +98,7 @@
               v-model="instructions"
               :state="instructionsState"
               name="instructions"
+              placeholder="e.g., 1. Wash the fruits. ..."
               required
             ></b-form-textarea>
           </b-form-group>
@@ -106,11 +114,31 @@
               v-model="ingredients"
               :state="ingredientsState"
               name="ingredients"
+              placeholder="Eggs,Sugar,..."
               required
             ></b-form-input>
           </b-form-group>
 
-          <b-button type="submit" variant="primary">Submit</b-button>
+          <b-form-group
+            label="Image URL"
+            label-for="image-url-input"
+            invalid-feedback="Invalid image URL"
+            :state="imageUrlState"
+          >
+            <b-form-input
+              id="image-url-input"
+              v-model="imageUrl"
+              :state="imageUrlState"
+              type="url"
+              required
+              placeholder="https://example.com/image.jpg"
+            ></b-form-input>
+          </b-form-group>
+
+          <div class="button-container">
+            <b-button type="reset" variant="primary">Clear All</b-button>
+            <b-button type="submit" variant="primary">Submit</b-button>
+          </div>
         </form>
       </b-modal>
     </div>
@@ -130,11 +158,13 @@ export default {
       servings: null,
       instructions: "",
       ingredients: "",
+      imageUrl: "",
       titleState: null,
       minutesState: null,
       servingsState: null,
       instructionsState: null,
       ingredientsState: null,
+      imageUrlState: null,
     };
   },
   methods: {
@@ -145,6 +175,7 @@ export default {
       this.servingsState = valid;
       this.instructionsState = valid;
       this.ingredientsState = valid;
+      this.imageUrlState = valid;
       return valid;
     },
     resetModal() {
@@ -156,63 +187,104 @@ export default {
       this.servings = null;
       this.instructions = "";
       this.ingredients = "";
+      this.imageUrl = "";
       this.titleState = null;
       this.minutesState = null;
       this.servingsState = null;
       this.instructionsState = null;
       this.ingredientsState = null;
+      this.imageUrlState = null;
     },
-    handleOk(bvModalEvent) {
+    async handleOk(bvModalEvent) {
       bvModalEvent.preventDefault();
       this.handleSubmit();
     },
-    handleSubmit() {
+
+    async handleSubmit() {
       if (!this.checkFormValidity()) {
         return;
       }
 
-      // Parse comma-separated ingredients into JSON array
-      const ingredientsArray = this.ingredients
-        .split(",")
-        .map((ingredient) => ingredient.trim());
+      if (this.$root.store.username) {
+        // Parse comma-separated ingredients into JSON array
+        const ingredientsArray = this.ingredients
+          .split(',')
+          .map((ingredient) => ingredient.trim());
 
-      // Create a recipe object with the form data
-      const recipe = {
-        title: this.title,
-        readyInMinutes: this.readyInMinutes,
-        vegetarian: this.vegetarian,
-        vegan: this.vegan,
-        glutenFree: this.glutenFree,
-        servings: this.servings,
-        instructions: this.instructions,
-        ingredients: ingredientsArray,
-      };
+        // Create a recipe object with the form data
+        const recipe = {
+          title: this.title,
+          readyInMinutes: this.readyInMinutes,
+          vegetarian: this.vegetarian,
+          vegan: this.vegan,
+          glutenFree: this.glutenFree,
+          servings: this.servings,
+          instructions: this.instructions,
+          ingredients: ingredientsArray,
+          imageUrl: this.imageUrl,
+        };
 
-      // Perform additional logic, such as saving the recipe or performing other actions
-      console.log("Recipe:", recipe);
+        try {
+          const response = await this.axios.post(
+            this.$root.store.server_domain +'/recipes/createRecipe', 
+            recipe,
+            {withCredentials: true}
+          );
 
-      // Reset the form and hide the modal
-      this.resetModal();
-      this.$nextTick(() => {
-        this.$bvModal.hide("modal-prevent-closing");
-      });
+          if (response.status === 201) {
+            console.log('Recipe added successfully!');
+            this.$root.toast(
+              "Add New Recipe",
+              "Recipe was added to my recipes successfully!",
+              "success"
+            );
+          }
+
+          // Reset the form and hide the modal
+          this.resetModal();
+          this.$nextTick(() => {
+            this.$bvModal.hide('modal-prevent-closing');
+          });
+        } catch (error) {
+          console.error("An error occurred", error);
+          this.$root.toast(
+            "Add New Recipe",
+            "Recipe was not added!",
+            "danger"
+          );
+        }
+      } else {
+        this.$root.toast(
+          "Add New Recipe",
+          "You must login to add a recipe!",
+          "danger"
+        );
+      }
     },
   },
 };
 </script>
 
 <style>
-
 .modal-container {
   position: absolute;
-  top: 100px; 
+  top: 10%; /* 10% from the top of the window */
   left: 0;
   right: 0;
   margin: 0 auto;
-  max-width: 600px; 
+  /* max-width: 90%; */
 }
+
 #modal-prevent-closing {
-  margin-top: 80px;
-  max-width: 100%;
+  margin-top: 8%; /* 8% from the top of the window */
+  /* max-width: 100%; */
+}
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 </style>
+
+
+

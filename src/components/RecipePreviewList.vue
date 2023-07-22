@@ -12,10 +12,17 @@
       </b-row>
     </div>
 
-    <div v-else>
+    <div v-else-if="title == 'Family Recipes'">
       <b-row>
           <b-col v-for="r in recipes" :key="r.id" cols="3">
             <RecipePreview :isFamily="true" ref="previews" class="recipePreview" :recipe="r" :isFavorite="isFavoriteRecipe(r.id)" @toggle-favorite="toggleFavorite" :isViewed="isRecipeViewed(r.id)" @toggle-viewed="toggleViewed"></RecipePreview>
+          </b-col>
+      </b-row>
+    </div>
+    <div v-else>
+      <b-row>
+          <b-col v-for="r in recipes" :key="r.id" cols="3">
+            <RecipePreview ref="previews" class="recipePreview" :recipe="r" :isFavorite="isFavoriteRecipe(r.id)" @toggle-favorite="toggleFavorite" :isViewed="isRecipeViewed(r.id)" @toggle-viewed="toggleViewed"></RecipePreview>
           </b-col>
       </b-row>
     </div>
@@ -83,9 +90,9 @@
     },
   
     mounted() { //TODO uncomment this when using the server
-      if (this.title == 'Random Recipes'){
-        this.getRandomRecipes();
-      }
+      // if (this.title == 'Random Recipes'){
+      //   this.getRandomRecipes();
+      // }
 
       // if (this.title == 'Last Watched Recipes'){
       //   this.getLastWatchedRecipes();
@@ -95,9 +102,9 @@
       //   this.getFavoriteRecipes();
       // }
 
-      // if (this.title == 'My Recipes'){
-      //   this.getMyRecipes();
-      // }
+      if (this.title == 'My Recipes'){
+        this.getMyRecipes();
+      }
 
       // if (this.title == 'Family Recipes'){
       //   this.getFamilyRecipes();
@@ -294,6 +301,7 @@
         }
           
         this.recipes = [];
+        console.log(recipes);
         this.recipes.push(...recipes);
       }
     }

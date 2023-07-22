@@ -10,37 +10,72 @@
           class="w-100"
         ></b-form-input>
       </div>
+
+      <!-- Radio buttons for sort type selection -->
+      <b-form-group
+        class="sort-type-radio"
+        id="sortTypeGroup"
+        v-slot="{ ariaDescribedby }"
+      >
+      <label class="section-label">Sort By:</label>
+        <b-form-radio-group
+          id="sortTypeGroupRadios"
+          v-model="selectedSortType"
+          :options="sortOptions"
+          :aria-describedby="ariaDescribedby"
+          name="sortType"
+        ></b-form-radio-group>
+        <label class="section-label">Results Per Page:</label>
+        <b-form-radio-group
+          id="resultsPerPageGroupRadios"
+          v-model="resultsPerPage"
+          :options="resultsPerPageOptions"
+          :aria-describedby="ariaDescribedby"
+          name="resultsPerPage"
+        ></b-form-radio-group>
+      </b-form-group>
+
+      <!-- Search button -->
       <div>
-        <button @click="search" class="btn btn-primary ml-2">Search</button>
+        <button
+          @click="search"
+          :disabled="text.length === 0"
+          class="btn btn-primary ml-2"
+        >
+          Search
+        </button>
       </div>
     </div>
 
-    <b-form-select
-      v-model="selectedCuisine"
-      :options="cuisineOptions"
-      placeholder="Select Cuisine"
-      class="mb-3"
-    ></b-form-select>
-
-    <b-form-select
-      v-model="selectedDiet"
-      :options="dietOptions"
-      placeholder="Select Diet"
-      class="mb-3"
-    ></b-form-select>
-
-    <b-form-select
-      v-model="selectedIntolerance"
-      :options="intoleranceOptions"
-      placeholder="Select Intolerance"
-      class="mb-3"
-    ></b-form-select>
-    <b-form-select
-      v-model="resultsPerPage"
-      :options="resultsPerPageOptions"
-      placeholder="Results Per Page"
-      class="mb-3"
-    ></b-form-select>
+    <div class="row">
+      <div class="col-md-4">
+        <label for="cuisine" class="highlight-label">Cuisine:</label>
+        <b-form-select
+          v-model="selectedCuisine"
+          :options="cuisineOptions"
+          placeholder="Select Cuisine"
+          class="mb-3"
+        ></b-form-select>
+      </div>
+      <div class="col-md-4">
+        <label for="diet" class="highlight-label">Diet:</label>
+        <b-form-select
+          v-model="selectedDiet"
+          :options="dietOptions"
+          placeholder="Select Diet"
+          class="mb-3"
+        ></b-form-select>
+      </div>
+      <div class="col-md-4">
+        <label for="intolerance" class="highlight-label">Intolerance:</label>
+        <b-form-select
+          v-model="selectedIntolerance"
+          :options="intoleranceOptions"
+          placeholder="Select Intolerance"
+          class="mb-3"
+        ></b-form-select>
+      </div>
+    </div>
 
     <div
       v-if="showRecentSearches && recentSearches.length > 0"
@@ -77,16 +112,18 @@
       </ul>
     </div>
 
-
     <table width="100%">
-      <br><br>
+      <br /><br />
       <tr>
         <td width="100%">
-          <RecipePreviewList ref="previewList"  title="Search Result"></RecipePreviewList>
+          <RecipePreviewList
+            v-if="searchInitiated"
+            ref="previewList"
+            title="Search Result"
+          ></RecipePreviewList>
         </td>
       </tr>
     </table>
-
   </div>
 </template>
 
@@ -99,25 +136,33 @@ import {
   intoleranceOptions,
   resultsPerPageOptions,
 } from "../assets/searchOptions.js";
+import RecipePreviewList from "../components/RecipePreviewList";
 export default {
   name: "SearchPage",
   components: {
     RecipePreviewList,
   },
-  
+
   data() {
     return {
       text: "",
+      searchInitiated: false,
       recentSearches: [],
       showRecentSearches: false,
-      selectedCuisine: null,
+      selectedCuisine: undefined,
       cuisineOptions, // Use the imported cuisineOptions
-      selectedDiet: null,
+      selectedDiet: undefined,
       dietOptions, // Use the imported dietOptions
-      selectedIntolerance: null,
+      selectedIntolerance: undefined,
       intoleranceOptions, // Use the imported intoleranceOptions
-      resultsPerPage: null,
+      resultsPerPage: undefined,
       resultsPerPageOptions, // Use the imported resultsPerPageOptions
+      selectedSortType: "Default",
+      sortOptions: [
+        { text: "Default", value: "Default" },
+        { text: "Prepare Time", value: "Prepare Time" },
+        { text: "Most Popular", value: "Most Popular" },
+      ],
     };
   },
   mounted() {
@@ -142,7 +187,21 @@ export default {
       console.log("Search initiated with query:", this.text);
       this.closeRecentSearches();
       this.saveSearch(this.text);
-      this.$refs.previewList.searchQuery(this.text, number, cusineType, dietType, intoleranceType, sortBy)
+      // Get the selected values for cuisine, diet, and intolerance
+      const cuisineType = this.selectedCuisine;
+      const dietType = this.selectedDiet;
+      const intoleranceType = this.selectedIntolerance;
+      const sortBy = this.selectedSortType;
+
+      this.$refs.previewList.searchQuery(
+        this.text,
+        this.resultsPerPage,
+        cuisineType,
+        dietType,
+        intoleranceType,
+        sortBy
+      );
+      searchInitiated = true;
     },
 
     openRecentSearches(event) {
@@ -202,5 +261,11 @@ export default {
 
 .recent-search-item {
   cursor: pointer;
+}
+.highlight-label {
+  font-weight: bold;
+}
+.section-label {
+  font-weight: bold;
 }
 </style>

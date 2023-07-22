@@ -137,9 +137,8 @@
         </b-sidebar>
       </div>
     </header>
-    <router-view />
-
     <CreateNewRecipeModal v-if="isModalOpen" @close="closeModal" />
+    <router-view />
   </div>
 </template>
 
@@ -162,7 +161,7 @@ export default {
       textcolor: "",
     };
   },
-
+  
   methods: {
     toggleSidebar() {
       this.sidebarVisible = !this.sidebarVisible;

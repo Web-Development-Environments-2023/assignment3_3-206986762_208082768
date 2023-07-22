@@ -97,7 +97,7 @@ export default {
     },
     async Login() {
       try {
-        
+
         const response = await this.axios.post(
           this.$root.store.server_domain +"/Login",
           {
@@ -106,7 +106,9 @@ export default {
           }
         );
         this.$root.store.login(this.form.username);
-        this.$router.push("/");
+        if (!(this.$route.name === "main")){
+          this.$router.push("/");
+        }
       } catch (err) {
         this.form.submitError = err.response.data.message;
       }

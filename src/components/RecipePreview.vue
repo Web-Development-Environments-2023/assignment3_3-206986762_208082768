@@ -149,7 +149,7 @@ export default {
             const response = await this.axios.post(
               this.$root.store.server_domain + "/users/favorites",
               { recipeId: recipeID },
-              { withCredentials: true }
+              {withCredentials: true}
             );
 
             if (response.status === 200) {
@@ -188,7 +188,7 @@ export default {
             const response = await this.axios.post(
               this.$root.store.server_domain + "/users/lastWatchedRecipes",
               {recipeId: recipeID},
-              { withCredentials: true }
+              {withCredentials: true}
             );
 
             if (response.status === 200){

@@ -29,6 +29,7 @@ import {
   ModalPlugin,
   FormCheckboxPlugin,
   FormTextareaPlugin,
+  FormRadioPlugin,
 } from "bootstrap-vue";
 [
   FormGroupPlugin,
@@ -46,6 +47,7 @@ import {
   ModalPlugin,
   FormCheckboxPlugin,
   FormTextareaPlugin,
+  FormRadioPlugin,
 ].forEach((x) => Vue.use(x));
 Vue.use(Vuelidate);
 
@@ -85,6 +87,7 @@ const shared_data = {
   },
   logout() {
     localStorage.removeItem("username");
+    localStorage.removeItem("recentSearches");
     this.username = undefined;
   },
 };
