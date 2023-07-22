@@ -90,9 +90,9 @@
     },
   
     mounted() { //TODO uncomment this when using the server
-      // if (this.title == 'Random Recipes'){
-      //   this.getRandomRecipes();
-      // }
+      if (this.title == 'Random Recipes'){
+        this.getRandomRecipes();
+      }
 
       // if (this.title == 'Last Watched Recipes'){
       //   this.getLastWatchedRecipes();
@@ -106,9 +106,9 @@
         this.getMyRecipes();
       }
 
-      // if (this.title == 'Family Recipes'){
-      //   this.getFamilyRecipes();
-      // }
+      if (this.title == 'Family Recipes'){
+        this.getFamilyRecipes();
+      }
     },
   
     created() {
@@ -254,7 +254,7 @@
         
         try {
           const response = await this.axios.post(
-            "/recipes/search",
+            this.$root.store.server_domain + "/recipes/search",
             {params:{query:query, number:number, cuisine:cuisine, diet:diet, intolerance:intolerance}},
           );
 

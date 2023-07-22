@@ -17,7 +17,7 @@
         id="sortTypeGroup"
         v-slot="{ ariaDescribedby }"
       >
-      <label class="section-label">Sort By:</label>
+        <label class="section-label">Sort By:</label>
         <b-form-radio-group
           id="sortTypeGroupRadios"
           v-model="selectedSortType"
@@ -116,11 +116,12 @@
       <br /><br />
       <tr>
         <td width="100%">
-          <RecipePreviewList
-            v-if="searchInitiated"
-            ref="previewList"
-            title="Search Result"
-          ></RecipePreviewList>
+          <div v-show="searchInitiated">
+            <RecipePreviewList
+              ref="previewList"
+              title="Search Result"
+            ></RecipePreviewList>
+          </div>
         </td>
       </tr>
     </table>
@@ -186,7 +187,9 @@ export default {
     async search() {
       console.log("Search initiated with query:", this.text);
       this.closeRecentSearches();
-      this.saveSearch(this.text);
+      if (!this.recentSearches.includes(this.text)) {
+        this.saveSearch(this.text);
+      }
       // Get the selected values for cuisine, diet, and intolerance
       const cuisineType = this.selectedCuisine;
       const dietType = this.selectedDiet;
@@ -201,7 +204,7 @@ export default {
         intoleranceType,
         sortBy
       );
-      searchInitiated = true;
+      this.searchInitiated = true;
     },
 
     openRecentSearches(event) {
