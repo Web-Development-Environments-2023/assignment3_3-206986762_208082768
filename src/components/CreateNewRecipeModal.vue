@@ -266,6 +266,7 @@ export default {
 </script>
 
 <style>
+
 .modal-container {
   position: absolute;
   top: 10%; /* 10% from the top of the window */
@@ -276,8 +277,10 @@ export default {
 }
 
 #modal-prevent-closing {
-  margin-top: 8%; /* 8% from the top of the window */
-  /* max-width: 100%; */
+  margin-top: 50px;
+  max-width: 100%; 
+  /* margin-top: 8%;
+  max-width: 100%; */
 }
 .button-container {
   display: flex;

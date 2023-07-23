@@ -103,6 +103,13 @@ export default {
       required: false,
       default: false,
     },
+
+    isMyRecipe: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    
   },
 
   created() {
@@ -128,10 +135,20 @@ export default {
     },
 
     async navigateToRecipe(recipeId) {
-      this.$router.push({
-        name: "recipe",
-        params: { recipeId, family: this.isFamily },
-      });
+      if (this.isFamily){
+        let id = this.recipe.recipe_id
+        this.$router.push({ name: "recipe", params: {id , family: this.isFamily } });
+      }
+
+      else if (this.isMyRecipe){
+        let id = this.recipe.recipe_id
+        this.$router.push({ name: "recipe", params: {id , myRecipe: this.isMyRecipe } });
+      }
+
+      else {
+        this.$router.push({ name: "recipe", params: { recipeId, family: this.isFamily } });
+      }
+      
     },
 
     async toggleFavorite(recipeID) {

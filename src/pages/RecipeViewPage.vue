@@ -15,7 +15,7 @@
             <h2 v-if="isFromFamily"><span style="font-weight: bold;">Prepared in:</span> <span style="color: rgb(149, 0, 255); font-weight: bold;">{{ recipe.whenToPrepare }}</span><br><br><br></h2>
 
             <h2><span style="font-weight: bold;">Total Time:</span> <span style="color: red; font-weight: bold;">{{ recipe.readyInMinutes }}</span> minutes</h2>
-            <h2><span style="color: red; font-weight: bold;">{{ recipe.popularity }}</span> likes</h2> <br>
+            <h2 v-if="!isFromFamily && !isFromMyRecipes"><span style="color: red; font-weight: bold;">{{ recipe.popularity }}</span> likes</h2> <br>
            
             <div class="centered-list">
               <ul>
@@ -61,21 +61,34 @@
               <div class="wrapper">
                 <div class="wrapped">
                   <h3><u>Ingredients:</u></h3> <br>
-                  <ul>
-                    <li
-                      v-for="(r, index) in recipe.extendedIngredients" :key="index + '_' + r.id" style="font-weight: bold; font-size: x-large; color: red;">
-                    <h4 style="font-size:x-large; color: black; font-weight: bold;">{{ r.original }}</h4>
+                  <ul v-if="!isFromFamily && !isFromMyRecipes">
+                    <li v-for="(r, index) in recipe.extendedIngredients" :key="index + '_' + r.id" style="font-weight: bold; font-size: x-large; color: red;">
+                      <h4 style="font-size:x-large; color: black; font-weight: bold;">{{ r.original }}</h4>
                     </li>
                   </ul>
+
+                  <ul v-else>
+                    <li v-for="(value, key) in recipe.ingredients" :key="key" style="font-weight: bold; font-size: x-large; color: red;">
+                      <h4 style="font-size:x-large; color: black; font-weight: bold;">{{ value }}</h4>
+                    </li>
+                  </ul>
+
                 </div>
 
                 <div class="wrapped">
                   <h3><u>Instructions:</u></h3> <br>
-                  <ol>
+                  <ol v-if="!isFromFamily && !isFromMyRecipes">
                     <li v-for="s in recipe._instructions" :key="s.number" style="font-weight: bold; font-size: x-large; color: red;">
                       <h4 style="font-size:x-large; color: black; font-weight: bold;">{{ s.step }}</h4>
                     </li>
                   </ol>
+
+                  <ol v-else>
+                    <li style="font-weight: bold; font-size: x-large; color: red;">
+                      <h4 style="font-size:x-large; color: black; font-weight: bold;">{{ recipe.instructions }}</h4>
+                    </li>
+                  </ol>
+
                 </div>
               </div>
             </div>
@@ -95,9 +108,11 @@
 <script>
 
   export default {
+    name: "RecipeViewPage",
     data() {
       return { //TODO recipe: null
         isFromFamily: false,
+        isFromMyRecipes: false,
         recipe: null
                 // {
                 //   id: 641726,
@@ -119,16 +134,35 @@
     
     async created() { //TODO uncomment this when working with server
       this.isFromFamily = this.$route.params.family === true;
+      this.isFromMyRecipes = this.$route.params.myRecipe === true;
 
       try {
         let response;
 
-        try { 
-          response = await this.axios.get(
-            this.$root.store.server_domain + "/recipes/" + this.$route.params.recipeId,
-            { withCredentials: true }
-          );
+        try {
+          if (this.isFromFamily){
+            console.log("im here from family");
+            response = await this.axios.get(
+              this.$root.store.server_domain + "/users/familyRecipes/" + this.$route.params.id,
+              { withCredentials: true }
+            );
+          }
 
+          else if (this.isFromMyRecipes){
+            console.log("im here from my recipes");
+            response = await this.axios.get(
+              this.$root.store.server_domain + "/users/myAllRecipes/" + this.$route.params.id,
+              { withCredentials: true }
+            );
+          }
+
+          else{
+            response = await this.axios.get(
+              this.$root.store.server_domain + "/recipes/" + this.$route.params.recipeId,
+              { withCredentials: true }
+            );
+          }
+          
           if (response.status !== 200) this.$router.replace("/NotFound");
         } catch (error) {
           console.log("error.response.status", error.response.status);
@@ -136,39 +170,43 @@
           return;
         }
 
-        let {
-          analyzedInstructions,
-          instructions,
-          extendedIngredients,
-          popularity,
-          readyInMinutes,
-          image,
-          title
-        } = response.data;
+        if (this.isFromFamily || this.isFromMyRecipes){
+          console.log(response.data)
+          this.recipe = response.data[0];
+        }
 
-        console.log(response.data);
+        else{
+          let {
+            analyzedInstructions,
+            instructions,
+            extendedIngredients,
+            popularity,
+            readyInMinutes,
+            image,
+            title
+          } = response.data;
 
-        let _instructions = analyzedInstructions
-          .map((fstep) => {
-            fstep.steps[0].step = fstep.name + fstep.steps[0].step;
-            return fstep.steps;
-          })
-          .reduce((a, b) => [...a, ...b], []);
+          let _instructions = analyzedInstructions
+            .map((fstep) => {
+              fstep.steps[0].step = fstep.name + fstep.steps[0].step;
+              return fstep.steps;
+            })
+            .reduce((a, b) => [...a, ...b], []);
 
-        let _recipe = {
-          instructions,
-          _instructions,
-          analyzedInstructions,
-          extendedIngredients,
-          popularity,
-          readyInMinutes,
-          image,
-          title
-        };
+          let _recipe = {
+            instructions,
+            _instructions,
+            analyzedInstructions,
+            extendedIngredients,
+            popularity,
+            readyInMinutes,
+            image,
+            title
+          };
 
-        console.log(_recipe);
-
-        this.recipe = _recipe;
+          this.recipe = _recipe;
+        }
+        
       } catch (error) {
         console.log(error);
       }

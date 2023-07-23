@@ -19,6 +19,15 @@
           </b-col>
       </b-row>
     </div>
+
+    <div v-else-if="title == 'My Recipes'">
+      <b-row>
+          <b-col v-for="r in recipes" :key="r.id" cols="3">
+            <RecipePreview :isMyRecipe="true" ref="previews" class="recipePreview" :recipe="r" :isFavorite="isFavoriteRecipe(r.id)" @toggle-favorite="toggleFavorite" :isViewed="isRecipeViewed(r.id)" @toggle-viewed="toggleViewed"></RecipePreview>
+          </b-col>
+      </b-row>
+    </div>
+
     <div v-else>
       <b-row>
           <b-col v-for="r in recipes" :key="r.id" cols="3">
