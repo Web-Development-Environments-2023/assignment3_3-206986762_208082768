@@ -7,7 +7,7 @@
         title="Create New Recipe"
         @show="resetModal"
         @hidden="resetModal"
-        @ok="handleOk"
+        hide-footer
       >
         <form
           ref="form"
@@ -140,6 +140,7 @@
             <b-button type="submit" variant="primary">Submit</b-button>
           </div>
         </form>
+        <b-button class="mt-3" block @click="$bvModal.hide('modal-prevent-closing')">Close Me</b-button>
       </b-modal>
     </div>
   </div>

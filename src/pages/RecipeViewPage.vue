@@ -141,7 +141,6 @@
 
         try {
           if (this.isFromFamily){
-            console.log("im here from family");
             response = await this.axios.get(
               this.$root.store.server_domain + "/users/familyRecipes/" + this.$route.params.id,
               { withCredentials: true }
@@ -149,7 +148,6 @@
           }
 
           else if (this.isFromMyRecipes){
-            console.log("im here from my recipes");
             response = await this.axios.get(
               this.$root.store.server_domain + "/users/myAllRecipes/" + this.$route.params.id,
               { withCredentials: true }
@@ -171,7 +169,6 @@
         }
 
         if (this.isFromFamily || this.isFromMyRecipes){
-          console.log(response.data)
           this.recipe = response.data[0];
         }
 

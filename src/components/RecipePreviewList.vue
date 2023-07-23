@@ -103,13 +103,13 @@
         this.getRandomRecipes();
       }
 
-      // if (this.title == 'Last Watched Recipes'){
-      //   this.getLastWatchedRecipes();
-      // }
+      if (this.title == 'Last Watched Recipes'){
+        this.getLastWatchedRecipes();
+      }
 
-      // if (this.title == 'Favorite Recipes'){
-      //   this.getFavoriteRecipes();
-      // }
+      if (this.title == 'Favorite Recipes'){
+        this.getFavoriteRecipes();
+      }
 
       if (this.title == 'My Recipes'){
         this.getMyRecipes();
@@ -310,7 +310,6 @@
         }
           
         this.recipes = [];
-        console.log(recipes);
         this.recipes.push(...recipes);
       }
     }

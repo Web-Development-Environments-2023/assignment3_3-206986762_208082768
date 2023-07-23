@@ -137,7 +137,7 @@
         </b-sidebar>
       </div>
     </header>
-    <CreateNewRecipeModal v-if="isModalOpen" @close="closeModal" />
+    <CreateNewRecipeModal v-show="isModalOpen" @close="closeModal" />
     <router-view />
   </div>
 </template>
