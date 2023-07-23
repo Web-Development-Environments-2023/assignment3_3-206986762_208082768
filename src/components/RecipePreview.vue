@@ -28,10 +28,13 @@
             recipe.readyInMinutes
           }}</span>
           minutes |
-          <span style="color: red; font-weight: bold">{{
-            recipe.aggregateLikes
-          }}</span>
-          likes <br /><br />
+          <span v-if="!isFamily && !isMyRecipe">
+            <span style="color: red; font-weight: bold">{{
+              recipe.popularity
+            }}</span>
+            likes 
+          </span>
+          <br /><br />
           <span :style="recipe.vegetarian ? 'color: green' : 'color: red'">
             {{ recipe.vegetarian ? "Vegetarian" : "Not vegetarian" }}
           </span>
@@ -137,16 +140,16 @@ export default {
     async navigateToRecipe(recipeId) {
       if (this.isFamily){
         let id = this.recipe.recipe_id
-        this.$router.push({ name: "recipe", params: {id , family: this.isFamily } });
+        this.$router.push({ name: "familyRecipe", params: { id , family: this.isFamily } });
       }
 
       else if (this.isMyRecipe){
         let id = this.recipe.recipe_id
-        this.$router.push({ name: "recipe", params: {id , myRecipe: this.isMyRecipe } });
+        this.$router.push({ name: "MyRecipe", params: { id , myRecipe: this.isMyRecipe } });
       }
 
       else {
-        this.$router.push({ name: "recipe", params: { recipeId, family: this.isFamily } });
+        this.$router.push({ name: "recipe", params: { recipeId } });
       }
       
     },

@@ -15,24 +15,28 @@
             <h2 v-if="isFromFamily"><span style="font-weight: bold;">Prepared in:</span> <span style="color: rgb(149, 0, 255); font-weight: bold;">{{ recipe.whenToPrepare }}</span><br><br><br></h2>
 
             <h2><span style="font-weight: bold;">Total Time:</span> <span style="color: red; font-weight: bold;">{{ recipe.readyInMinutes }}</span> minutes</h2>
-            <h2 v-if="!isFromFamily && !isFromMyRecipes"><span style="color: red; font-weight: bold;">{{ recipe.popularity }}</span> likes</h2> <br>
+            <h2 v-if="!isFromFamily && !isFromMyRecipes"><span style="color: red; font-weight: bold;">{{ recipe.popularity }}</span> likes</h2>
+            <h2 v-if="!isFromFamily"><span style="font-weight: bold;">Servings: </span> <span style="color: red; font-weight: bold;">{{ recipe.servings }}</span></h2><br><br>
            
             <div class="centered-list">
               <ul>
-                <li>
+                <li v-if="recipe.vegetarian">
                   <span :style="recipe.vegetarian ? 'color: green' : 'color: red'">
-                    {{ recipe.vegetarian ? 'Vegetarian' : 'Not vegetarian' }}
+                    <img src="@/assets/vegetarian.png" width="47" height="47">
+                    {{ recipe.vegetarian ? 'Vegetarian' : ''}}
                   </span>
                 </li>
 
-                <li>
+                <li v-if="recipe.vegan">
                   <span :style="recipe.vegan ? 'color: purple;' : 'color: red;'">
+                    <img src="@/assets/vegan.png" width="47" height="47">
                     {{ recipe.vegan ? 'vegan' : 'Not vegan' }}
                   </span><br>
                 </li>
 
-                <li>
+                <li v-if="recipe.glutenFree">
                   <span :style="recipe.glutenFree ? 'color: blue' : 'color: red;'">
+                    <img src="@/assets/glutenFree.png" width="47" height="47">
                     {{ recipe.glutenFree ? 'No gluten' : 'With gluten' }}
                   </span>
                 </li>
@@ -113,21 +117,21 @@
       return { //TODO recipe: null
         isFromFamily: false,
         isFromMyRecipes: false,
-        recipe: null
-                // {
-                //   id: 641726,
-                //   title: "Dulce De Leche Brownies",
-                //   readyInMinutes: 45,
-                //   image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
-                //   aggregateLikes: 29,
-                //   popularity: 5,
-                //   vegan: true,
-                //   vegetarian: true,
-                //   glutenFree: true,
-                //   instructions: {},
-                //   servings: 4,
-                //   ingredients: {}
-                // }
+        recipe: 
+                {
+                  id: 641726,
+                  title: "Dulce De Leche Brownies",
+                  readyInMinutes: 45,
+                  image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
+                  aggregateLikes: 29,
+                  popularity: 5,
+                  vegan: true,
+                  vegetarian: true,
+                  glutenFree: true,
+                  instructions: {},
+                  servings: 4,
+                  ingredients: {}
+                }
         
       };
     },

@@ -6,9 +6,7 @@
     <table width="100%">
       <tr>
         <th id="title">Family Recipes</th>
-      </tr> 
-      
-      <br><br><br><br>
+      </tr> <br>
 
       <tr>
 

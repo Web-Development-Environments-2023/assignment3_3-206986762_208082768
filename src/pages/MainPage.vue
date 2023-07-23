@@ -10,8 +10,6 @@
         <th>Last watched recipes</th>
       </tr> 
       
-      <br><br>
-
       <tr>
 
         <td width="48%">
