@@ -6,9 +6,7 @@
       <table width="100%">
         <tr>
           <th id="title">My Favorite Recipes</th>
-        </tr> 
-        
-        <br><br><br><br>
+        </tr> <br>
 
         <tr>
 

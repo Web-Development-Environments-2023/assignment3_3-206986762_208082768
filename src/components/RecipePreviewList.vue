@@ -99,9 +99,9 @@
     },
   
     mounted() { //TODO uncomment this when using the server
-      if (this.title == 'Random Recipes'){
-        this.getRandomRecipes();
-      }
+      // if (this.title == 'Random Recipes'){
+      //   this.getRandomRecipes();
+      // }
 
       if (this.title == 'Last Watched Recipes'){
         this.getLastWatchedRecipes();
@@ -111,13 +111,13 @@
         this.getFavoriteRecipes();
       }
 
-      if (this.title == 'My Recipes'){
-        this.getMyRecipes();
-      }
+      // if (this.title == 'My Recipes'){
+      //   this.getMyRecipes();
+      // }
 
-      if (this.title == 'Family Recipes'){
-        this.getFamilyRecipes();
-      }
+      // if (this.title == 'Family Recipes'){
+      //   this.getFamilyRecipes();
+      // }
     },
   
     created() {
