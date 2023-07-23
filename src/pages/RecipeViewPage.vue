@@ -114,29 +114,14 @@
   export default {
     name: "RecipeViewPage",
     data() {
-      return { //TODO recipe: null
+      return {
         isFromFamily: false,
         isFromMyRecipes: false,
-        recipe: 
-                {
-                  id: 641726,
-                  title: "Dulce De Leche Brownies",
-                  readyInMinutes: 45,
-                  image: "https://spoonacular.com/recipeImages/641726-556x370.jpg",
-                  aggregateLikes: 29,
-                  popularity: 5,
-                  vegan: true,
-                  vegetarian: true,
-                  glutenFree: true,
-                  instructions: {},
-                  servings: 4,
-                  ingredients: {}
-                }
-        
+        recipe: null        
       };
     },
     
-    async created() { //TODO uncomment this when working with server
+    async created() {
       this.isFromFamily = this.$route.params.family === true;
       this.isFromMyRecipes = this.$route.params.myRecipe === true;
 

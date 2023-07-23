@@ -286,7 +286,6 @@ export default {
 }
 
 .dropdownItems:active .dropdown-item {
-  //TODO need to check this, this responsible for chenging the color when clicked
   color: #001aff !important;
 }
 

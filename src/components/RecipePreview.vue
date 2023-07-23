@@ -146,7 +146,6 @@ export default {
     },
 
     async toggleFavorite(recipeID) {
-      //TODO need to check if works!
       if (this.$root.store.username) {
         this.isFavorite = !this.isFavorite;
         this.$emit("toggle-favorite", recipeID, this.isFavorite);
@@ -187,7 +186,7 @@ export default {
       }
     },
 
-    async toggleViewed(recipeID) { //TODO need to check if works!
+    async toggleViewed(recipeID) {
       if (this.$root.store.username) {
 
         if (!this.isViewed && !this.isFamily && !this.isMyRecipe){
