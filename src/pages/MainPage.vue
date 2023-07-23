@@ -13,7 +13,7 @@
       <tr>
 
         <td width="48%">
-          <RecipePreviewList title="Random Recipes"></RecipePreviewList> <br><br>
+          <RecipePreviewList ref="previews" title="Random Recipes"></RecipePreviewList> <br><br>
           <b-button variant="danger" size="lg" style="margin-left: 50%;" @click="callGetRandom">Get More!</b-button> <br><br><br>
         </td>
 
@@ -55,7 +55,7 @@
 
     methods: {
       callGetRandom(){
-        this.$refs.RecipePreviewList.getRandomRecipes();
+        this.$refs.previews.getRandomRecipes();
       }
     }
   };
