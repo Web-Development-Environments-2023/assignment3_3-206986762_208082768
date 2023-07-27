@@ -24,6 +24,12 @@ import {
   AlertPlugin,
   ToastPlugin,
   LayoutPlugin,
+  SidebarPlugin,
+  IconsPlugin,
+  ModalPlugin,
+  FormCheckboxPlugin,
+  FormTextareaPlugin,
+  FormRadioPlugin,
 } from "bootstrap-vue";
 [
   FormGroupPlugin,
@@ -36,6 +42,12 @@ import {
   AlertPlugin,
   ToastPlugin,
   LayoutPlugin,
+  SidebarPlugin,
+  IconsPlugin,
+  ModalPlugin,
+  FormCheckboxPlugin,
+  FormTextareaPlugin,
+  FormRadioPlugin,
 ].forEach((x) => Vue.use(x));
 Vue.use(Vuelidate);
 
@@ -67,19 +79,19 @@ Vue.use(VueAxios, axios);
 Vue.config.productionTip = false;
 
 const shared_data = {
+  server_domain: "http://localhost:3000",
   username: localStorage.username,
   login(username) {
     localStorage.setItem("username", username);
     this.username = username;
-    console.log("login", this.username);
   },
   logout() {
-    console.log("logout");
     localStorage.removeItem("username");
+    localStorage.removeItem("recentSearches");
     this.username = undefined;
   },
 };
-console.log(shared_data);
+//console.log(shared_data);
 // Vue.prototype.$root.store = shared_data;
 
 new Vue({
